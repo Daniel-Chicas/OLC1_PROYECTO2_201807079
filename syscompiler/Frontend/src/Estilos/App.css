@@ -1,0 +1,53 @@
+body{
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}
+
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+
+.GeneralLogin {
+  background: linear-gradient(150deg, rgb(134, 134, 134), rgb(72, 75, 68), rgb(6, 7, 7));
+  background-size: 400% 300%;
+  animation: BgGradient 5s ease infinite;
+  height: 100vh;
+  flex-wrap: wrap;
+}
+
+@keyframes BgGradient{
+  0%{ background-position: 0% 50%;}
+  50%{background-position: 100% 50%;}
+  100%{ background-position: 0% 50%;}
+}
+
+#SubirArchivo{
+  height: 60vh;
+  font-size: 100px !important;
+  border: none !important;
+  background-color:  transparent !important;
+  font-size: 18px !important;
+}
+
+.Entrada{
+  width: 45%;
+  height: 00px;
+  margin-left: 50px;
+}
+
+.Salida{
+  width: 47%;
+  height: 200px;
+  margin-left: 50%;
+}
+
+#AgregarP{
+  margin-left: 40%;
+}
+
+#EliminarP{
+  margin-left: 5%;
+}
