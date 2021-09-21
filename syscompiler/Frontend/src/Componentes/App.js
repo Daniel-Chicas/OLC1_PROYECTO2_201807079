@@ -11,12 +11,14 @@ function App() {
   const [listado, setlistado] = useState([])
   var datos = localStorage.getItem('pestanias')
   var datosPes = localStorage.getItem('datosPes')
+  var consola = localStorage.getItem('consola')
 
   var json=""
 
   if (datos === null || datos === undefined) {
     localStorage.setItem('pestanias', 1)
     localStorage.setItem('datosPes', JSON.stringify([json]))
+    localStorage.setItem('consola', JSON.stringify([json]))
   }
 
   const agregar = () =>{
@@ -41,7 +43,7 @@ function App() {
     var actual = localStorage.getItem('actual')
     var lastChar = actual[actual.length -1];
     lastChar = parseInt(lastChar)
-    const nuevaLista = listado.filter((data, index) => index !== lastChar)
+    //const nuevaLista = listado.filter((data, index) => index !== lastChar)
 
     var datosPes = localStorage.getItem('datosPes')
     var datosP = JSON.parse(datosPes);
@@ -55,7 +57,7 @@ function App() {
     <div className="GeneralLogin">
       <NavBarInicio/>
       <div className="Entrada">
-          <Label size={'Huge'} color={"blue"}>Entradas</Label>
+          <Label size={'Huge'} color={"blue"}>Entrada</Label>
           <Button color='green' id="AgregarP" onClick={agregar}>Agregar</Button>
           <Button color='red'  id="EliminarP" onClick={eliminar}>Eliminar</Button>
           <Entrada 
@@ -66,8 +68,7 @@ function App() {
       <div className="Salida">
           <Label size={'Huge'} color={"blue"}>Consola</Label>
           <Salida 
-                  Cantidad={datos}
-                  Texto={listado}
+                  Texto={consola}
           />
       </div>
     </div>

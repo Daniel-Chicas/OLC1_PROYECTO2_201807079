@@ -11,7 +11,7 @@ body{
 
 
 .GeneralLogin {
-  background: linear-gradient(150deg, rgb(134, 134, 134), rgb(72, 75, 68), rgb(6, 7, 7));
+  background: linear-gradient(150deg, rgb(0, 0, 0), rgb(72, 75, 68), rgb(6, 7, 7));
   background-size: 400% 300%;
   animation: BgGradient 5s ease infinite;
   height: 100vh;
@@ -33,6 +33,7 @@ body{
 }
 
 .Entrada{
+  margin-top: 2%;
   width: 45%;
   height: 00px;
   margin-left: 50px;

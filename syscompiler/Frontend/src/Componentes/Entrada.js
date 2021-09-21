@@ -94,7 +94,7 @@ function Entrada(props) {
             className = "General"
           >
             {props.Texto.map((dato, index) => (
-              <Tab label={"Editor"+index} {...a11yProps(index)} />
+              <Tab label={"Pestaña "+index} {...a11yProps(index)} />
             ))}
           </Tabs>
           {props.Texto.map((dato, index) => (

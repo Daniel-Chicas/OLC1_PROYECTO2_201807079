@@ -9,13 +9,21 @@ import '../Estilos/Editor.css'
 
 function Consola(props) {
     const{
-        language,
-        value,
-        onChange
+        language
     } = props
 
+    var datosPes = localStorage.getItem('consola')
+    var datos = JSON.parse(datosPes);
+    const [value, setValue] = React.useState(datos[0]);
+
     function handleChange(editor, data, value){
-        onChange(value)
+        setValue(value)
+    }
+
+    const cambia = ()=>{
+        var datosPes = localStorage.getItem('consola')
+        var datos = JSON.parse(datosPes);
+        localStorage.setItem('consola', JSON.stringify(datos))
     }
 
     return (
@@ -24,14 +32,13 @@ function Consola(props) {
                 onBeforeChange = {handleChange}
                 value = {value}
                 className = "code-mirror-wrapper"
-
+                onChange = {cambia(props.id)}
                 options={{
                     lineWrapping: true,
                     lint : true,
                     mode: language,
                     theme : 'material',
-                    lineNumbers : true,
-                    readOnly: true
+                    lineNumbers : true
                 }}
             />
         </div>
