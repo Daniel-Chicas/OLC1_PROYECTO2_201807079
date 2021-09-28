@@ -2,6 +2,7 @@ import {React, useState} from 'react'
 import {Menu} from 'semantic-ui-react'
 import '../Estilos/Nav.css'
 import {saveAs} from 'file-saver'
+import axios from 'axios'
 //window.location.reload();
 
 var realizado = false
@@ -11,6 +12,27 @@ const opciones =[ 'Guardar Archivo', 'Ejecutar', 'Reporte de Errores', 'Árbol A
 
 
 function NavBarIncio() {
+
+    async function post(e){
+        actual = localStorage.getItem('actual')
+        lastChar = actual[actual.length -1];
+        lastChar = parseInt(lastChar)
+        datosPes = localStorage.getItem('datosPes')
+        datosP = JSON.parse(datosPes);
+        var entrada = datosP[lastChar];
+        try{
+            await axios.post("http://localhost:5000/", {
+                entrada
+            })
+            .then(response=>{
+                console.log(response.data)
+                localStorage.setItem('consola', JSON.stringify(["falta la consola, \nReporte de errores, \nárbol ast y \nReporte de símbolos\n\n"+response.data.message]))
+            })
+        }catch(error){
+            console.log(error)
+        }        
+        window.location.reload()
+    }
 
     const leerArchivo = (e) =>{
         const file = e.target.files[0];
@@ -23,7 +45,6 @@ function NavBarIncio() {
             var actual = localStorage.getItem('actual')
             var lastChar = actual[actual.length -1];
             lastChar = parseInt(lastChar)
-            console.log(lastChar)
             var datosPes = localStorage.getItem('datosPes')
             var datosP = JSON.parse(datosPes);
             datosP[lastChar] = fileReader.result;
@@ -52,7 +73,7 @@ function NavBarIncio() {
         window.location.reload()
     }else if (activo === "yellow"){
         localStorage.setItem('consola', JSON.stringify(["falta la consola, \nReporte de errores, \nárbol ast y \nReporte de símbolos"]))
-        window.location.reload()
+        post();
     }else if (activo === "orange"){
         window.location.reload()
     }else if (activo === "teal"){
