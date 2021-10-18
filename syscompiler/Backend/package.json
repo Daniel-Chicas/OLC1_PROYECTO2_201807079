@@ -1,11 +1,12 @@
 {
-  "name": "Backend",
+  "name": "backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "nodemon": "nodemon index.js"
+    "nodemon": "nodemon index.js",
+    "start": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +15,8 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "jison": "^0.4.18",
-    "nodemon": "^2.0.13"
+    "nodemon": "^2.0.13",
+    "tslint": "^6.1.3",
+    "typescript": "^4.4.3"
   }
 }

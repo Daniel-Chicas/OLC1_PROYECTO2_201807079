@@ -1,4 +1,17 @@
 %{
+    const {Error_} = require('../dist/Error/Error.js')
+    const {Literal,TipoLiteral} = require('../dist/Expresiones/Literal.js');
+    const {Aritmetica,TipoAritmetica} = require('../dist/Expresiones/Aritmetica.js');
+    const {Logica, TipoLogica} = require('../dist/Expresiones/Logica.js');
+    const {Relacional, TipoRelacional} = require('../dist/Expresiones/Relacional.js');
+    const {Casteo} = require('../dist/Expresiones/Casteo.js');
+    const {Acceso, AccesoVectores, ModiVectores, AgregarLista, AccesoListas, ModificarLista} = require('../dist/Expresiones/Acceso.js');
+    const {Minusculas, Mayusculas, Tamanio, Truncate, Round, Typeof, toString, toCharArray} = require('../dist/Expresiones/FuncionesCambios.js')
+
+
+    const {Declaracion} = require('../dist/Instrucciones/Declaracion.js');
+    const {Vectores} = require('../dist/Instrucciones/Vectores.js');
+    const {Imprimir} = require('../dist/Instrucciones/Imprimir.js')
 
 %}
 
@@ -11,7 +24,8 @@
 \s+                                         // se ignoran espacios en blanco
 ("//".*\r\n)|("//".*\n)|("//".*\r)              return "COMENTARIO";
 "/*""/"*([^*/]|[^*]"/"|"*"[^/])*"*"*"*/"        return "COMENTARIO"; 
-[\"|\']([^\"\n]|(\\\"))*[\"|\']                 return "FRASE";
+[\"]([^\"\n]|(\\\"))*[\"]                       return "FRASE";
+[\']([^\"\n]|(\\\"))[\']                        return "CARACTER";
 
 //palabras reservadas
 
@@ -58,7 +72,7 @@
 
 
 //'dijofdjf'+${}'
-[0-9]+("."[0-9]+)?\b                            return 'ENTERO';
+[0-9]+(".")[0-9]+\b                             return 'DECIMAL';
 [0-9]+\b                                        return 'ENTERO';
 [a-zA-ZáéíóúÁÉÍÓÚ]+["_"0-9A-Za-záéíóúÁÉÍÓÚ]*    return "ID";
 "("                                             return 'PAR_ABRE';
@@ -129,7 +143,10 @@ general
 ;				
 
 cuerpo
+    //YA ESTÁ
     :variable                                                   {$$= $1}
+    
+    //FALTA
     |COMENTARIO                                                 {$$= $1}
     |funcionMetodo                                              {$$= $1}
     |START WITH ID PAR_ABRE PAR_CIERRA PCOMA                    {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6}
@@ -154,10 +171,13 @@ cuerpoFunciones
 ;
 
 declaraciones
-            :variable                                                       {$$= $1}
+            //YA ESTÁ
+            :variable                                                       {$$= $1} 
+
+            //FALTA
             |COMENTARIO                                                     {$$= $1}
             |sentencias                                                     {$$= $1}
-            |IMPRIMIR PAR_ABRE expresion PAR_CIERRA PCOMA                   {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5}
+            |IMPRIMIR PAR_ABRE expresion PAR_CIERRA PCOMA                   {$$= new Imprimir($3, @1.first_line, @1.first_column)}
 ;
 
 sentencias
@@ -189,36 +209,106 @@ elifs
 
 
 variable
-        :tipo identificadores PCOMA                                                             {$$= $1+" "+$2+";"}
-        |tipo identificadores IGUAL expresion PCOMA                                             {$$= $1+" "+$2+" = "+$4+";"}
-        |identificadores IGUAL expresion PCOMA                                                  {$$= $1+" = "+$3+";"}
-        |tipo identificadores IGUAL casteos                                                     {$$= $1+" "+$2+"="+$4}
-        |identificadores IGUAL casteos                                                          {$$= $1+"="+$3}
-        |ID MAS MAS PCOMA                                                                       {$$= $1+"++;"}
-        |ID MENOS MENOS PCOMA                                                                   {$$= $1+"--;"}
+        :tipo identificadores PCOMA                                                             {
+                                                                                                    var arreglo = $2.split(",");
+                                                                                                    var expresiones = [];
+                                                                                                    for (let index = 0; index < arreglo.length; index++) {
+                                                                                                        var valor;
+                                                                                                        if($1.toString().toLowerCase() == "int"){
+                                                                                                            var valor = new Literal(0,TipoLiteral.ENTERO, @1.first_line, @1.first_column)
+                                                                                                        }else if($1.toString().toLowerCase() == "double"){
+                                                                                                            var valor = new Literal(0.0,TipoLiteral.DOUBLE, @1.first_line, @1.first_column)
+                                                                                                        }else if($1.toString().toLowerCase() == "boolean"){
+                                                                                                            var valor = new Literal("true",TipoLiteral.BOOLEAN, @1.first_line, @1.first_column)
+                                                                                                        }else if($1.toString().toLowerCase() == "char"){
+                                                                                                            var valor = new Literal('0',TipoLiteral.CHAR, @1.first_line, @1.first_column)
+                                                                                                        }else if($1.toString().toLowerCase() == "string"){
+                                                                                                            var valor = new Literal("",TipoLiteral.CADENA, @1.first_line, @1.first_column)
+                                                                                                        } 
+                                                                                                        expresiones.push(new Declaracion($1, arreglo[index], valor,@1.first_line, @1.first_column))
+                                                                                                    }
+                                                                                                    $$ = expresiones;
+                                                                                                }
+        |tipo identificadores IGUAL expresion PCOMA                                             {  
+                                                                                                    var arreglo = $2.split(",");
+                                                                                                    var expresiones = [];
+                                                                                                    for (let index = 0; index < arreglo.length; index++) {
+                                                                                                        expresiones.push(new Declaracion($1, arreglo[index], $4,@1.first_line, @1.first_column))
+                                                                                                    }
+                                                                                                    $$ = expresiones;
+                                                                                                } 
+        |identificadores IGUAL expresion PCOMA                                                  {
+                                                                                                    var arreglo = $1.split(",");
+                                                                                                    var expresiones = [];
+                                                                                                    for (let index = 0; index < arreglo.length; index++) {
+                                                                                                        expresiones.push(new Declaracion("", arreglo[index], $3,@1.first_line, @1.first_column))
+                                                                                                    }
+                                                                                                    $$ = expresiones;
+                                                                                                }
+        |tipo identificadores IGUAL casteos                                                     {
+                                                                                                    var arreglo = $2.split(",");
+                                                                                                    var expresiones = [];
+                                                                                                    for (let index = 0; index < arreglo.length; index++) {
+                                                                                                        expresiones.push(new Declaracion($1, arreglo[index], $4,@1.first_line, @1.first_column))
+                                                                                                    }
+                                                                                                    $$ = expresiones;
+                                                                                                }
+        |identificadores IGUAL casteos                                                          {
+                                                                                                    var arreglo = $1.split(",");
+                                                                                                    var expresiones = [];
+                                                                                                    for (let index = 0; index < arreglo.length; index++) {
+                                                                                                        expresiones.push(new Declaracion("", arreglo[index], $3,@1.first_line, @1.first_column))
+                                                                                                    }
+                                                                                                    $$ = expresiones;
+                                                                                                }
+        |ID MAS MAS PCOMA                                                                       {$$= new Aritmetica(new Acceso($1, @1.first_line, @1.first_column), new Literal("1",TipoLiteral.ENTERO, @1.first_line, @1.first_column), TipoAritmetica.SUMA, @1.first_line, @1.first_column)}
+        |ID MENOS MENOS PCOMA                                                                   {$$= new Aritmetica(new Acceso($1, @1.first_line, @1.first_column), new Literal("1",TipoLiteral.ENTERO, @1.first_line, @1.first_column), TipoAritmetica.RESTA, @1.first_line, @1.first_column)}
         
         //VECTORES
-        |tipo ID CABRE CCIERRA IGUAL NUEVO tipo CABRE ENTERO CCIERRA PCOMA                      {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6+" "+$7+" "+$8+" "+$9+" "+$10+" "+$11}
-        |ID CABRE CCIERRA IGUAL NUEVO tipo CABRE ENTERO CCIERRA PCOMA                           {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6+" "+$7+" "+$8+" "+$9+" "+$10}
-        |tipo ID CABRE CCIERRA IGUAL LLABRE expresion LLCIERRA PCOMA                            {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6+" "+$7+" "+$8+" "+$9}
-        |ID CABRE CCIERRA IGUAL LLABRE expresion LLCIERRA PCOMA                                 {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6+" "+$7+" "+$8}
-        |ID CABRE CCIERRA IGUAL expresion PCOMA                                                 {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6}
-        |ID CABRE ENTERO CCIERRA IGUAL expresion PCOMA                                          {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6+" "+$7}
+        |tipo ID CABRE CCIERRA IGUAL NUEVO tipo CABRE expresion CCIERRA PCOMA                   {
+                                                                                                    if($1.toString().toLowerCase() == $7.toString().toLowerCase()){
+                                                                                                        $$= new Declaracion("vector@si", $1+"&"+$2, $9, @1.first_line, @1.first_column)
+                                                                                                    }else{
+                                                                                                        throw new Error_(@1.first_line, @1.first_column, "Semántico", "La asignación del vector: "+$2.toString()+", no es del mismo tipo. ("+$1+" _ "+$7+")")
+                                                                                                    }
+                                                                                                }
+        |tipo ID CABRE CCIERRA IGUAL LLABRE expresion LLCIERRA PCOMA                            {$$= new Declaracion("vector@no", $1+"&"+$2, $7, @1.first_line, @1.first_column)}
+        |ID CABRE expresion CCIERRA IGUAL expresion PCOMA                                       {$$= new ModiVectores($1, $3, $6, @1.first_line, @1.first_column)}
+        |ID CABRE CCIERRA IGUAL NUEVO tipo CABRE expresion CCIERRA PCOMA                        {$$= new Declaracion("vector@si", "&"+$1, $8,@1.first_line, @1.first_column)}
+        |ID CABRE CCIERRA IGUAL LLABRE expresion LLCIERRA PCOMA                                 {$$= new Declaracion("vector@no", "&"+$1, $6, @1.first_line, @1.first_column)}
 
         //LISTAS DINÁMICAS
-        |LISTA MENOR tipo MAYOR ID IGUAL NUEVO LISTA MENOR tipo MAYOR PCOMA                     {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6+" "+$7+" "+$8+" "+$9+" "+$10+" "+$11+" "+$12}
-        |LISTA MENOR tipo MAYOR ID IGUAL TOCHARARRAY PAR_ABRE expresion PAR_CIERRA  PCOMA       {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6+" "+$7+" "+$8+" "+$9+" "+$10+" "+$11}
-        |AGREGAR PAR_ABRE ID COMA expresion PAR_CIERRA PCOMA                                    {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6+" "+$7}
-        |MODIFICAR PAR_ABRE ID COMA ENTERO COMA expresion PAR_CIERRA PCOMA                      {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6+" "+$7+" "+$8+" "+$9}
+        |LISTA MENOR tipo MAYOR ID IGUAL NUEVO LISTA MENOR tipo MAYOR PCOMA                     {$$= new Declaracion("lista", $3+"&"+$5, "", @1.first_line, @1.first_column)}
+        |AGREGAR PAR_ABRE ID COMA expresion PAR_CIERRA PCOMA                                    {$$= new AgregarLista($3, $5, @1.first_line, @1.first_column)}
+        |MODIFICAR PAR_ABRE ID COMA aritmeticos COMA expresion PAR_CIERRA PCOMA                 {$$= new ModificarLista($3, $5, $7, @1.first_line, @1.first_column)}
+        |LISTA MENOR tipo MAYOR ID IGUAL TOCHARARRAY PAR_ABRE expresion PAR_CIERRA  PCOMA       {$$= new Declaracion("listaChar", $3+"&"+$5, $9, @1.first_line, @1.first_column)}
 
         //SENTENCIAS DE TRANSFERENCIA
         |BREAK PCOMA                                                                            {$$= $1+" "+$2}
         |CONTINUE PCOMA                                                                         {$$= $1+" "+$2}
         |RETURN expresion PCOMA                                                                 {$$= $1+" "+$2}
+
+        //ANULADOS
+        //|ID CABRE CCIERRA IGUAL expresion PCOMA                                                 {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6}
+;
+
+aritmeticos
+        :ID                                                 {$$= new Acceso($1, @1.first_line, @1.first_column)}
+        |aritmeticos MAS aritmeticos                        {$$= new Aritmetica($1,$3,TipoAritmetica.SUMA, @1.first_line, @1.first_column)}
+        |aritmeticos MENOS aritmeticos                      {$$= new Aritmetica($1,$3,TipoAritmetica.RESTA, @1.first_line, @1.first_column)}
+        |aritmeticos POR aritmeticos                        {$$= new Aritmetica($1,$3,TipoAritmetica.MULTIPLICACION, @1.first_line, @1.first_column)}
+        |aritmeticos DIVIDIR aritmeticos                    {$$= new Aritmetica($1,$3,TipoAritmetica.DIVISION, @1.first_line, @1.first_column)}
+        |aritmeticos MOD aritmeticos                        {$$= new Aritmetica($1,$3,TipoAritmetica.MODULO, @1.first_line, @1.first_column)}
+        |aritmeticos POTENCIA aritmeticos                   {$$= new Aritmetica($1,$3,TipoAritmetica.POTENCIA, @1.first_line, @1.first_column)}
+        |ENTERO	                                            {$$= new Literal($1,TipoLiteral.ENTERO, @1.first_line, @1.first_column)}
+        |DECIMAL                                            {$$= new Literal($1,TipoLiteral.DOUBLE, @1.first_line, @1.first_column)}
+        |ID CABRE expresion CCIERRA                         {$$= new AccesoVectores($1, $3, @1.first_line, @1.first_column)}
+        |SACAR PAR_ABRE ID COMA expresion PAR_CIERRA        {$$= new AccesoListas($3, $5, @1.first_line, @1.first_column)}
+        |PAR_ABRE aritmeticos PAR_CIERRA                    {$$= $2}
 ;
 
 casteos
-        :PAR_ABRE tipo PAR_CIERRA expresion PCOMA       {$$="("+$2+")"+$4+";"}
+        :PAR_ABRE tipo PAR_CIERRA expresion PCOMA       {$$ = new Casteo($2, $4, @1.first_line, @1.first_column)}
 ;
 
 identificadores
@@ -235,42 +325,62 @@ tipo
 ;
 
 expresion	
-    :MENOS expresion %prec UMENOS                       {$$= "-"+$2}
-    |NOT expresion                                      {$$= "!"+$1}
-    |expresion IGUAL expresion                          {$$= $1+" = "+$3}
-    |expresion AND expresion                            {$$= $1+" && "+$3}
-    |expresion OR expresion                             {$$= $1+" || "+$3}
-    |expresion COMA expresion                           {$$= $1+" , "+$3}
-    |expresion MAS expresion                            {$$= $1+"+"+$3}
-    |expresion MENOS expresion                          {$$= $1+"-"+$3}
-    |expresion POR expresion                            {$$= $1+"*"+$3}
-    |expresion DIVIDIR expresion                        {$$= $1+"/"+$3}
-    |expresion IGUALACION expresion                     {$$= $1+"=="+$3}
-    |expresion DIFERENCIA expresion                     {$$= $1+"!="+$3}
-    |expresion MAYOR_IGUAL expresion                    {$$= $1+"<="+$3}
-    |expresion MENOR_IGUAL expresion                    {$$= $1+">="+$3}
-    |expresion MAYOR expresion                          {$$= $1+">"+$3}
-    |expresion MENOR expresion                          {$$= $1+"<"+$3}
-    |PAR_ABRE expresion PAR_CIERRA                      {$$= "("+$2+")"}
-    |expresion MOD expresion                            {$$= $1+"%"+$3}
-    |expresion POTENCIA expresion                       {$$= $1+"^"+$3}
-	|ENTERO	                                            {$$= Number($1)}
-	|FRASE                                              {$$= $1}
-    |TRUE                                               {$$= $1}    
-    |FALSE                                              {$$= $1}
-    |ID                                                 {$$= $1}
-    |expresion MAS MAS                                  {$$= $1+"++"}
-    |expresion MENOS MENOS                              {$$= $1+"--"}
-    |ID CABRE ENTERO CCIERRA                            {$$= $1+" "+$2+" "+$3+" "+$4}
-    |SACAR PAR_ABRE ID COMA expresion PAR_CIERRA        {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6}
+    :MENOS expresion %prec UMENOS                       {$$= new Aritmetica($2,new Literal("-1",TipoLiteral.ENTERO, @1.first_line, @1.first_column),TipoAritmetica.MULTIPLICACION, @1.first_line, @1.first_column)}
+    //LÓGICOS
+    |NOT expresion                                      {$$= new Logica($1,"", TipoLogica.NOT, @1.first_line, @1.first_column)}
+    |expresion AND expresion                            {$$= new Logica($1,$3, TipoLogica.AND, @1.first_line, @1.first_column)}
+    |expresion OR expresion                             {$$= new Logica($1,$3, TipoLogica.OR, @1.first_line, @1.first_column)}
+    //ARITMÉTICOS
+    |expresion MAS expresion                            {$$= new Aritmetica($1,$3,TipoAritmetica.SUMA, @1.first_line, @1.first_column)}
+    |expresion MENOS expresion                          {$$= new Aritmetica($1,$3,TipoAritmetica.RESTA, @1.first_line, @1.first_column)}
+    |expresion POR expresion                            {$$= new Aritmetica($1,$3,TipoAritmetica.MULTIPLICACION, @1.first_line, @1.first_column)}
+    |expresion DIVIDIR expresion                        {$$= new Aritmetica($1,$3,TipoAritmetica.DIVISION, @1.first_line, @1.first_column)}
+    |expresion MOD expresion                            {$$= new Aritmetica($1,$3,TipoAritmetica.MODULO, @1.first_line, @1.first_column)}
+    |expresion POTENCIA expresion                       {$$= new Aritmetica($1,$3,TipoAritmetica.POTENCIA, @1.first_line, @1.first_column)}
+    |PAR_ABRE expresion PAR_CIERRA                      {$$= $2}
+    //RELACIONALES
+    |expresion IGUALACION expresion                     {$$= new Relacional($1,$3,TipoRelacional.IGUAL, @1.first_line, @1.first_column)}
+    |expresion DIFERENCIA expresion                     {$$= new Relacional($1,$3,TipoRelacional.DIFERENCIA, @1.first_line, @1.first_column)}
+    |expresion MAYOR_IGUAL expresion                    {$$= new Relacional($1,$3,TipoRelacional.MAYORI, @1.first_line, @1.first_column)}
+    |expresion MENOR_IGUAL expresion                    {$$= new Relacional($1,$3,TipoRelacional.MENORI, @1.first_line, @1.first_column)}
+    |expresion MAYOR expresion                          {$$= new Relacional($1,$3,TipoRelacional.MAYOR, @1.first_line, @1.first_column)}
+    |expresion MENOR expresion                          {$$= new Relacional($1,$3,TipoRelacional.MENOR, @1.first_line, @1.first_column)}
+    |expresion MAS MAS                                  {$$= new Aritmetica($1, new Literal("1",TipoLiteral.ENTERO, @1.first_line, @1.first_column),TipoAritmetica.SUMA, @1.first_line, @1.first_column)}
+    |expresion MENOS MENOS                              {$$= new Aritmetica($1, new Literal("1",TipoLiteral.ENTERO, @1.first_line, @1.first_column),TipoAritmetica.RESTA, @1.first_line, @1.first_column)}
+    
+    |ID                                                 {$$= new Acceso($1, @1.first_line, @1.first_column)}
+    |expresion COMA expresion                           {$$= new Vectores($1, $3, @1.first_line, @1.first_column)}
+
+    //|expresion IGUAL expresion                          {$$= $1+" = "+$3}
+
+    |ID CABRE expresion CCIERRA                         {$$= new AccesoVectores($1, $3, @1.first_line, @1.first_column)}
+    |SACAR PAR_ABRE ID COMA expresion PAR_CIERRA        {$$= new AccesoListas($3, $5, @1.first_line, @1.first_column)}
+    
+    //llamadas a métodos/funciones
     |ID PAR_ABRE expresion PAR_CIERRA                   {$$= $1+" "+$2+" "+$3+" "+$4}
     |ID PAR_ABRE PAR_CIERRA                             {$$= $1+" "+$2+" "+$3}
-    |MINUSCULAS PAR_ABRE expresion PAR_CIERRA           {$$= $1+" "+$2+" "+$3+" "+$4}
-    |MAYUSCULAS PAR_ABRE expresion PAR_CIERRA           {$$= $1+" "+$2+" "+$3+" "+$4}
-    |LENGTH PAR_ABRE expresion PAR_CIERRA               {$$= $1+" "+$2+" "+$3+" "+$4}
-    |TRUNCATE PAR_ABRE expresion PAR_CIERRA             {$$= $1+" "+$2+" "+$3+" "+$4}
-    |ROUND PAR_ABRE expresion PAR_CIERRA                {$$= $1+" "+$2+" "+$3+" "+$4}
-    |TYPEOF PAR_ABRE expresion PAR_CIERRA               {$$= $1+" "+$2+" "+$3+" "+$4}
-    |TOSTRING PAR_ABRE expresion PAR_CIERRA             {$$= $1+" "+$2+" "+$3+" "+$4}
-    |TOCHARARRAY PAR_ABRE expresion PAR_CIERRA          {$$= $1+" "+$2+" "+$3+" "+$4}
+    
+    |MINUSCULAS PAR_ABRE expresion PAR_CIERRA           {$$= new Minusculas($3, @1.first_line, @1.first_column)}
+    |MAYUSCULAS PAR_ABRE expresion PAR_CIERRA           {$$= new Mayusculas($3, @1.first_line, @1.first_column)}
+    |LENGTH PAR_ABRE expresion PAR_CIERRA               {$$= new Tamanio($3, @1.first_line, @1.first_column)}
+    |TRUNCATE PAR_ABRE expresion PAR_CIERRA             {$$= new Truncate($3, @1.first_line, @1.first_column)}
+    |ROUND PAR_ABRE expresion PAR_CIERRA                {$$= new Round($3, @1.first_line, @1.first_column)}
+    |TYPEOF PAR_ABRE expresion PAR_CIERRA               {$$= new Typeof($3, @1.first_line, @1.first_column)}
+    |TOSTRING PAR_ABRE expresion PAR_CIERRA             {$$= new toString($3, @1.first_line, @1.first_column)}
+    |TOCHARARRAY PAR_ABRE expresion PAR_CIERRA          {$$= new toCharArray($3, @1.first_line, @1.first_column)}
+    
+	|ENTERO	                                            {$$= new Literal($1,TipoLiteral.ENTERO, @1.first_line, @1.first_column)}
+    |DECIMAL                                            {$$= new Literal($1,TipoLiteral.DOUBLE, @1.first_line, @1.first_column)}
+    |TRUE                                               {$$= new Literal($1,TipoLiteral.BOOLEAN, @1.first_line, @1.first_column)}  
+    |FALSE                                              {$$= new Literal($1,TipoLiteral.BOOLEAN, @1.first_line, @1.first_column)}
+    |CARACTER                                           {   
+                                                            var cadena = $1.slice(1)
+                                                            var guardar = cadena.slice(0,-1)
+                                                            $$= new Literal(guardar,TipoLiteral.CHAR, @1.first_line, @1.first_column)
+                                                        }
+	|FRASE                                              {   
+                                                            var cadena = $1.slice(1)
+                                                            var guardar = cadena.slice(0,-1)
+                                                            $$= new Literal(guardar,TipoLiteral.CADENA, @1.first_line, @1.first_column)
+                                                        }
 ;
