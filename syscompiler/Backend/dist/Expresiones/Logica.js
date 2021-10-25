@@ -13,15 +13,15 @@ class Logica extends Expresion_1.Expresion {
         //var x = this.execute();
         //console.log(x)
     }
-    execute(entorno) {
-        const leftValue = this.left.execute(entorno);
-        const rightValue = this.right.execute(entorno);
+    execute(entorno, simbolos) {
+        const leftValue = this.left.execute(entorno, simbolos);
+        const rightValue = this.right.execute(entorno, simbolos);
         if (this.tipo == TipoLogica.AND) {
             const result = leftValue.value && rightValue.value;
             return { value: result, type: Retorno_1.Type.BOOLEAN };
         }
         else if (this.tipo == TipoLogica.OR) {
-            const result = leftValue.value && rightValue.value;
+            const result = leftValue.value || rightValue.value;
             return { value: result, type: Retorno_1.Type.BOOLEAN };
         }
         else if (this.tipo == TipoLogica.NOT) {

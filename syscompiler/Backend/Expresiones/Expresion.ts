@@ -1,4 +1,5 @@
 import { Entorno } from "../Ambitos/Entorno";
+import { TablaSimbolos } from "../Reportes/TablaSimbolos";
 import { tiposSuma, Type, Retorno, tiposResta, tiposMultiplicacion, tiposDivision, tiposPotencia, tiposModulo } from "./Retorno"
 
 export abstract class Expresion {
@@ -9,7 +10,7 @@ export abstract class Expresion {
         this.column = column
     }
 
-    public abstract execute(entorno: Entorno): Retorno;
+    public abstract execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno;
 
     public tipoSum(tipo1: Type, tipo2: Type): Type {
         return tiposSuma[tipo1][tipo2];

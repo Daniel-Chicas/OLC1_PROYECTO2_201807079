@@ -15,7 +15,8 @@ export enum Type{
     LISTADOU = 71,
     LISTABOO = 72,
     LISTACHA = 73,
-    LISTACAD = 74
+    LISTACAD = 74,
+    COMENTARIO=100
 }
 
 export type Retorno = {

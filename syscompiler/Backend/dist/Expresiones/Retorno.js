@@ -20,6 +20,7 @@ var Type;
     Type[Type["LISTABOO"] = 72] = "LISTABOO";
     Type[Type["LISTACHA"] = 73] = "LISTACHA";
     Type[Type["LISTACAD"] = 74] = "LISTACAD";
+    Type[Type["COMENTARIO"] = 100] = "COMENTARIO";
 })(Type = exports.Type || (exports.Type = {}));
 exports.tiposSuma = [
     [Type.ENTERO, Type.DOUBLE, Type.ENTERO, Type.ENTERO, Type.CADENA],

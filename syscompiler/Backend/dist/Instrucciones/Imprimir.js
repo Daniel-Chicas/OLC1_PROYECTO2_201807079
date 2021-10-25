@@ -7,10 +7,10 @@ class Imprimir extends Instruccion_1.Instruccion {
         super(line, column);
         this.expresiones = expresiones;
     }
-    execute(entorno) {
+    execute(entorno, simbolos) {
         for (const expresion of this.expresiones) {
-            const value = expresion.execute(entorno);
-            console.log(value);
+            const value = expresion.execute(entorno, simbolos);
+            console.log(value.value);
         }
     }
 }

@@ -14,8 +14,10 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "graphviz-react": "^1.2.0",
     "jison": "^0.4.18",
     "nodemon": "^2.0.13",
+    "os": "^0.1.2",
     "tslint": "^6.1.3",
     "typescript": "^4.4.3"
   }

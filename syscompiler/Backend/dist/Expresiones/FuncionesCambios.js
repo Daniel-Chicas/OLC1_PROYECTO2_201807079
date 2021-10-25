@@ -3,14 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.toCharArray = exports.toString = exports.Typeof = exports.Round = exports.Truncate = exports.Tamanio = exports.Mayusculas = exports.Minusculas = void 0;
 const Error_1 = require("../Error/Error");
 const Expresion_1 = require("./Expresion");
+const Literal_1 = require("./Literal");
 const Retorno_1 = require("./Retorno");
 class Minusculas extends Expresion_1.Expresion {
     constructor(valor, line, column) {
         super(line, column);
         this.valor = valor;
     }
-    execute(entorno) {
-        var value = this.valor.execute(entorno);
+    execute(entorno, simbolos) {
+        var value = this.valor.execute(entorno, simbolos);
         if (value.type == Retorno_1.Type.CADENA) {
             return { value: value.value.toLowerCase(), type: value.type };
         }
@@ -25,8 +26,8 @@ class Mayusculas extends Expresion_1.Expresion {
         super(line, column);
         this.valor = valor;
     }
-    execute(entorno) {
-        var value = this.valor.execute(entorno);
+    execute(entorno, simbolos) {
+        var value = this.valor.execute(entorno, simbolos);
         if (value.type == Retorno_1.Type.CADENA) {
             return { value: value.value.toUpperCase(), type: value.type };
         }
@@ -41,8 +42,8 @@ class Tamanio extends Expresion_1.Expresion {
         super(line, column);
         this.valor = valor;
     }
-    execute(entorno) {
-        var value = this.valor.execute(entorno);
+    execute(entorno, simbolos) {
+        var value = this.valor.execute(entorno, simbolos);
         if (value.type == Retorno_1.Type.CADENA) {
             return { value: value.value.length, type: 0 };
         }
@@ -61,8 +62,8 @@ class Truncate extends Expresion_1.Expresion {
         super(line, column);
         this.valor = valor;
     }
-    execute(entorno) {
-        var value = this.valor.execute(entorno);
+    execute(entorno, simbolos) {
+        var value = this.valor.execute(entorno, simbolos);
         if (value.type == Retorno_1.Type.ENTERO || value.type == Retorno_1.Type.DOUBLE) {
             return { value: Math.trunc(value.value), type: Retorno_1.Type.ENTERO };
         }
@@ -75,8 +76,8 @@ class Round extends Expresion_1.Expresion {
         super(line, column);
         this.valor = valor;
     }
-    execute(entorno) {
-        var value = this.valor.execute(entorno);
+    execute(entorno, simbolos) {
+        var value = this.valor.execute(entorno, simbolos);
         if (value.type == Retorno_1.Type.ENTERO || value.type == Retorno_1.Type.DOUBLE) {
             return { value: Math.round(value.value), type: Retorno_1.Type.ENTERO };
         }
@@ -89,8 +90,8 @@ class Typeof extends Expresion_1.Expresion {
         super(line, column);
         this.valor = valor;
     }
-    execute(entorno) {
-        var value = this.valor.execute(entorno);
+    execute(entorno, simbolos) {
+        var value = this.valor.execute(entorno, simbolos);
         if (value.type == Retorno_1.Type.CADENA) {
             return { value: "string", type: Retorno_1.Type.CADENA };
         }
@@ -121,8 +122,8 @@ class toString extends Expresion_1.Expresion {
         super(line, column);
         this.valor = valor;
     }
-    execute(entorno) {
-        var value = this.valor.execute(entorno);
+    execute(entorno, simbolos) {
+        var value = this.valor.execute(entorno, simbolos);
         if (value.type == Retorno_1.Type.CADENA) {
             return { value: value.value.toString(), type: Retorno_1.Type.CADENA };
         }
@@ -147,10 +148,14 @@ class toCharArray extends Expresion_1.Expresion {
         super(line, column);
         this.valor = valor;
     }
-    execute(entorno) {
-        var value = this.valor.execute(entorno);
+    execute(entorno, simbolos) {
+        var value = this.valor.execute(entorno, simbolos);
         if (value.type == Retorno_1.Type.CADENA) {
-            return { value: value.value.toString().split(""), type: Retorno_1.Type.LISTACHA };
+            var vector = [];
+            for (let i = 0; i < value.value.toString().split("").length; i++) {
+                vector.push(new Literal_1.Literal(value.value.toString().split("")[i], Literal_1.TipoLiteral.CHAR, this.line, this.column));
+            }
+            return { value: vector, type: Retorno_1.Type.LISTACHA };
         }
         throw new Error_1.Error_(this.line, this.column, "Semántico", "Solo se aceptan valores de tipo String para este método.");
     }

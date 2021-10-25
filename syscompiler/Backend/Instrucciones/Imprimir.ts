@@ -1,5 +1,6 @@
 import { Entorno } from "../Ambitos/Entorno";
 import { Expresion } from "../Expresiones/Expresion";
+import { TablaSimbolos } from "../Reportes/TablaSimbolos";
 import { Instruccion } from "./Instruccion";
 
 export class Imprimir extends Instruccion{
@@ -9,10 +10,10 @@ export class Imprimir extends Instruccion{
         this.expresiones = expresiones;
     }
 
-    public execute(entorno: Entorno){
+    public execute(entorno: Entorno, simbolos: TablaSimbolos){
         for (const expresion of this.expresiones) {
-            const value = expresion.execute(entorno)
-            console.log(value)
+            const value = expresion.execute(entorno, simbolos)
+            console.log(value.value)
         }
     }
 }

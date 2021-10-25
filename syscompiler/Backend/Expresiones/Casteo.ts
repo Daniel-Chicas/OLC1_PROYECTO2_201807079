@@ -1,5 +1,6 @@
 import { Entorno } from '../Ambitos/Entorno';
 import { Error_ } from '../Error/Error';
+import { TablaSimbolos } from '../Reportes/TablaSimbolos';
 import { Expresion } from './Expresion';
 import { Retorno, Type } from './Retorno';
 
@@ -9,8 +10,8 @@ export class Casteo extends Expresion{
         super(line, column);
     }
 
-    public execute(entorno: Entorno): Retorno {
-        const valor = this.value.execute(entorno);
+    public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno {
+        const valor = this.value.execute(entorno, simbolos);
         if( valor.type == Type.ENTERO && this.tipoCasteo.toLowerCase() == "double"){
             //console.log(Number((valor.value).toFixed(2)))
             return { value: Number((valor.value).toFixed(2)), type: Type.DOUBLE }

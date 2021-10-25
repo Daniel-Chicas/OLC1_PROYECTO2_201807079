@@ -1,4 +1,5 @@
 import { Entorno } from "../Ambitos/Entorno";
+import { TablaSimbolos } from "../Reportes/TablaSimbolos";
 
 export abstract class Instruccion{
     constructor(public line: number, public column: number){
@@ -6,5 +7,5 @@ export abstract class Instruccion{
         this.column = column;
     }
 
-    public abstract execute(ambito: Entorno): any;
+    public abstract execute(entorno: Entorno, simbolos: TablaSimbolos): any;
 }

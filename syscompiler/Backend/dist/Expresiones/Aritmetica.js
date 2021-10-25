@@ -13,9 +13,9 @@ class Aritmetica extends Expresion_1.Expresion {
         //var x = this.execute();
         //console.log(x)
     }
-    execute(entorno) {
-        const leftValue = this.left.execute(entorno);
-        const rightValue = this.right.execute(entorno);
+    execute(entorno, simbolos) {
+        const leftValue = this.left.execute(entorno, simbolos);
+        const rightValue = this.right.execute(entorno, simbolos);
         if (this.tipo == TipoAritmetica.SUMA) {
             let dominante = this.tipoSum(leftValue.type, rightValue.type);
             if (dominante == Retorno_1.Type.CADENA) {

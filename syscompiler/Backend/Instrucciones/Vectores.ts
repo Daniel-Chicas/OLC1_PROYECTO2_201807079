@@ -16,6 +16,8 @@ export class Vectores extends Instruccion{
         var izq = this.Izquierda.execute(entorno);
         if(der.type == izq.type){
             return {value: izq.value +"|"+ der.value, type: der.type}
+        }else if(der.type == 0 && izq.type == 1 || der.type == 1 && izq.type == 0){
+            return {value: izq.value +"|"+ der.value, type: der.type}
         }else{
             throw new Error_(this.line, this.column, "Semántico", "No es posible asignar distintos tipos de datos en un vector.")
         }

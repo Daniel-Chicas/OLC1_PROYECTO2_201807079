@@ -1,6 +1,8 @@
 import { Entorno } from "../Ambitos/Entorno";
 import { Error_ } from "../Error/Error";
+import { TablaSimbolos } from "../Reportes/TablaSimbolos";
 import { Expresion } from "./Expresion";
+import { Literal, TipoLiteral } from "./Literal";
 import { Retorno, Type } from "./Retorno";
 
 export class Minusculas extends Expresion{
@@ -8,8 +10,8 @@ export class Minusculas extends Expresion{
         super(line, column)
     }
 
-    public execute(entorno: Entorno): Retorno{
-        var value = this.valor.execute(entorno);
+    public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno{
+        var value = this.valor.execute(entorno, simbolos);
         if(value.type == Type.CADENA){
             return {value: value.value.toLowerCase(), type: value.type}
         }else{
@@ -23,8 +25,8 @@ export class Mayusculas extends Expresion{
         super(line, column)
     }
 
-    public execute(entorno: Entorno): Retorno{
-        var value = this.valor.execute(entorno);
+    public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno{
+        var value = this.valor.execute(entorno, simbolos);
         if(value.type == Type.CADENA){
             return {value: value.value.toUpperCase(), type: value.type}
         }else{
@@ -38,8 +40,8 @@ export class Tamanio extends Expresion{
         super(line, column)
     }
 
-    public execute(entorno: Entorno): Retorno{
-        var value = this.valor.execute(entorno);
+    public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno{
+        var value = this.valor.execute(entorno, simbolos);
         if(value.type == Type.CADENA ){
             return {value: value.value.length, type: 0}
         }else if(value.type == Type.VECTORENT || value.type == Type.VECTORDOU || value.type == Type.VECTORBOO || value.type == Type.VECTORCHA || value.type == Type.VECTORCAD ){
@@ -56,8 +58,8 @@ export class Truncate extends Expresion{
         super(line, column)
     }
     
-    public execute(entorno: Entorno): Retorno{
-        var value = this.valor.execute(entorno);
+    public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno{
+        var value = this.valor.execute(entorno, simbolos);
         if(value.type == Type.ENTERO  || value.type== Type.DOUBLE){
             return {value: Math.trunc(value.value), type: Type.ENTERO}
         }
@@ -71,8 +73,8 @@ export class Round extends Expresion{
         super(line, column)
     }
     
-    public execute(entorno: Entorno): Retorno{
-        var value = this.valor.execute(entorno);
+    public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno{
+        var value = this.valor.execute(entorno, simbolos);
         if(value.type == Type.ENTERO  || value.type== Type.DOUBLE){
             return {value: Math.round(value.value), type: Type.ENTERO}
         }
@@ -86,8 +88,8 @@ export class Typeof extends Expresion{
         super(line, column)
     }
 
-    public execute(entorno: Entorno): Retorno{
-            var value = this.valor.execute(entorno);
+    public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno{
+            var value = this.valor.execute(entorno, simbolos);
             if(value.type == Type.CADENA){
                 return {value: "string", type: Type.CADENA}
             }else if(value.type == Type.ENTERO){
@@ -112,8 +114,8 @@ export class toString extends Expresion{
         super(line, column)
     }
 
-    public execute(entorno: Entorno): Retorno{
-            var value = this.valor.execute(entorno);
+    public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno{
+            var value = this.valor.execute(entorno, simbolos);
             if(value.type == Type.CADENA){
                 return {value: value.value.toString(), type: Type.CADENA}
             }else if(value.type == Type.ENTERO){
@@ -134,10 +136,14 @@ export class toCharArray extends Expresion{
         super(line, column)
     }
 
-    public execute(entorno: Entorno): Retorno{
-            var value = this.valor.execute(entorno);
+    public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno{
+            var value = this.valor.execute(entorno, simbolos);
             if(value.type == Type.CADENA){
-                return {value: value.value.toString().split(""), type: Type.LISTACHA}
+                var vector = [];
+                for (let i = 0; i < value.value.toString().split("").length; i++) {
+                    vector.push(new Literal(value.value.toString().split("")[i], TipoLiteral.CHAR, this.line, this.column))                   
+                }
+                return {value:vector, type: Type.LISTACHA}
             }
             throw new Error_(this.line, this.column, "Semántico", "Solo se aceptan valores de tipo String para este método.")
     }

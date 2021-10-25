@@ -2,17 +2,16 @@ import { Expresion } from "./Expresion";
 import { Retorno, Type } from "./Retorno"
 import { Error_ } from "../Error/Error";
 import { Entorno } from "../Ambitos/Entorno";
+import { TablaSimbolos } from "../Reportes/TablaSimbolos";
 
 export class Relacional extends Expresion{
     constructor(private left: Expresion, private right: Expresion, private tipo: TipoRelacional, line: number, column: number) {
         super(line, column);
-        //var x = this.execute();
-        //console.log(x)
     }
 
-    public execute(entorno: Entorno): Retorno {
-        const leftValue = this.left.execute(entorno);
-        const rightValue = this.right.execute(entorno);
+    public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno {
+        const leftValue = this.left.execute(entorno, simbolos);
+        const rightValue = this.right.execute(entorno, simbolos);
 
         if (this.tipo == TipoRelacional.IGUAL) {
             const result = leftValue.value == rightValue.value

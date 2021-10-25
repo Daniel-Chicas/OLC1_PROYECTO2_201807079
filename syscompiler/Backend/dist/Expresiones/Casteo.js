@@ -10,8 +10,8 @@ class Casteo extends Expresion_1.Expresion {
         this.tipoCasteo = tipoCasteo;
         this.value = value;
     }
-    execute(entorno) {
-        const valor = this.value.execute(entorno);
+    execute(entorno, simbolos) {
+        const valor = this.value.execute(entorno, simbolos);
         if (valor.type == Retorno_1.Type.ENTERO && this.tipoCasteo.toLowerCase() == "double") {
             //console.log(Number((valor.value).toFixed(2)))
             return { value: Number((valor.value).toFixed(2)), type: Retorno_1.Type.DOUBLE };

@@ -2,6 +2,7 @@ import { Expresion } from "./Expresion";
 import { Retorno, Type } from "./Retorno"
 import { Error_ } from "../Error/Error";
 import { Entorno } from "../Ambitos/Entorno";
+import { TablaSimbolos } from "../Reportes/TablaSimbolos";
 
 export class Aritmetica extends Expresion {
 
@@ -11,10 +12,10 @@ export class Aritmetica extends Expresion {
         //console.log(x)
     }
 
-    public execute(entorno: Entorno): Retorno {
-        const leftValue = this.left.execute(entorno);
+    public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno {
+        const leftValue = this.left.execute(entorno, simbolos);
 
-        const rightValue = this.right.execute(entorno);
+        const rightValue = this.right.execute(entorno, simbolos);
 
         if (this.tipo == TipoAritmetica.SUMA) {
             let dominante = this.tipoSum(leftValue.type, rightValue.type);
