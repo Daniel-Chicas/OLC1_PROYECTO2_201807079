@@ -27,11 +27,13 @@ export class nodoArbol{
 }
 
 var id_n = 1; 
+var ast = []
+
 export class Recorrido_Arbol{
     constructor(private nombre: string){ 
     }
     recorrer_arbolito3(nodo){
-        var concatena;
+        var concatena= "";
         if(nodo == undefined){
             console.error("NODO UNDEFINED")
             return
@@ -40,16 +42,21 @@ export class Recorrido_Arbol{
             nodo.id=id_n;
             id_n++;
         }
-        console.log(nodo.id + ' [label= "'+ nodo.valor +'" fillcolor="#d62728" shape="circle"];');
+        concatena = nodo.id + ' [label= "'+ nodo.valor +'" fillcolor="#d62728" shape="circle"];'
+        ast.push(concatena)
         if(nodo.hijos != undefined){
             nodo.hijos.forEach(element => {
-                console.log(nodo.id+'->'+ id_n +";");
-                concatena+=this.recorrer_arbolito3(element);
+                concatena = nodo.id+'->'+ id_n +";"
+                ast.push(concatena)
+                this.recorrer_arbolito3(element);
             });
         }else{
             console.error("NODO HIJOS UNDEFINED"+nodo)
         }
-            
-        return concatena;
     }
+
+    public getAST(){
+        return ast
+    }
+
 }

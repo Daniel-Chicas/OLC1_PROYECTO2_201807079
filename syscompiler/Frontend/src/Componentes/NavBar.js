@@ -21,7 +21,7 @@ function NavBarIncio() {
         datosP = JSON.parse(datosPes);
         var entrada = datosP[lastChar];
         try{
-            await axios.post("http://localhost:5000/", {
+            await axios.post("http://localhost:5000/ejecutar", {
                 entrada
             })
             .then(response=>{
@@ -36,6 +36,25 @@ function NavBarIncio() {
             console.log(error)
         }        
         window.location.reload()
+    }
+
+    async function ast(e){
+        actual = localStorage.getItem('actual')
+        lastChar = actual[actual.length -1];
+        lastChar = parseInt(lastChar)
+        datosPes = localStorage.getItem('datosPes')
+        datosP = JSON.parse(datosPes);
+        var entrada = datosP[lastChar];
+        try{
+            await axios.post("http://localhost:5000/ast", {
+                entrada
+            })
+            .then(response=>{
+                console.log(response.data.message)
+            })
+        }catch(error){
+            console.log(error)
+        }
     }
 
     const leerArchivo = (e) =>{
@@ -63,6 +82,7 @@ function NavBarIncio() {
     }
 
     const [activo, setactivo] = useState(colores[6])
+
     if (activo === "green"){
         if(!realizado){
             var actual = localStorage.getItem('actual')
@@ -81,7 +101,7 @@ function NavBarIncio() {
     }else if (activo === "orange"){
         window.location.reload()
     }else if (activo === "teal"){
-        window.location.reload()
+        ast();
     }else if (activo === "violet"){
         window.location.reload()
     }

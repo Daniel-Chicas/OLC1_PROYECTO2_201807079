@@ -11,16 +11,45 @@ NOMBRE_ARCHIVO = "C://Users//Daniel Chicas//Desktop//funciones.txt";
 
 const parserAst = require('./Ast/ast')
 const Recorrido_Arbol = require('./dist/Instrucciones/nodoArbol').Recorrido_Arbol
-
+const {exec} = require('child_process')
 
 fs.readFile(NOMBRE_ARCHIVO, 'utf8', (error, datos) => {
     if (error) throw error;
-
-    
     var raiz = new Recorrido_Arbol();
     var arbolast = parserAst.parse(datos)
-    console.log(raiz.recorrer_arbolito3(arbolast));
 
+    const erro = require('./dist/Error/Error').Error_;
+    var errores = new erro(0,0,"prueba", "")
+    var listaErrores = errores.getLista();
+    if(listaErrores.length != 0){
+        return "hay error", listaErrores
+    }else{
+        var recorrido = "digraph G {\n";
+        raiz.recorrer_arbolito3(arbolast, "./Reportes/DataReportes/ast.dot")
+        var listaRec = raiz.getAST();
+        for (let i = 0; i < listaRec.length; i++) {
+            recorrido +=  listaRec[i]+"\n"
+        }
+        recorrido += "}";
+        var archivo = './ast.dot'
+        if(fs.existsSync(archivo)){
+            fs.writeFileSync(archivo, recorrido, (err)=>console.log("hubo un error al crear el archivo."))
+        }else{
+            fs.appendFileSync(archivo, recorrido, (err)=>console.log("hubo un error al crear el archivo."))
+        }
+        exec('dot -T png ast.dot -o ast.png', (error, stdout, stderr)=>{
+            if(error){
+                console.log("error: "+error.message)
+                return
+            }
+            if(stderr){
+                console.log("stderr: "+stderr)
+                return
+            }
+            console.log("stdout: "+stdout)
+        })
+
+    }
 
     var ast;
     try {
@@ -81,18 +110,6 @@ fs.readFile(NOMBRE_ARCHIVO, 'utf8', (error, datos) => {
                     }
                 }
             }
-
-            var tablaS = tablaSimbolos.grafica(tablaSimbolos);
-            const archivo = './Reportes/DataReportes/tablaSimbolos.html'
-            if(fs.existsSync(archivo)){
-                fs.writeFileSync(archivo, tablaS, (err)=>console.log("hubo un error al crearel archivo."))
-            }else{
-                fs.appendFileSync(archivo, tablaS, (err)=>console.log("hubo un error al crearel archivo."))
-            }
-
-
-
-
             var imp = new Impresiones().getLista()
             console.log(imp)
         } catch (error) {
@@ -104,9 +121,30 @@ fs.readFile(NOMBRE_ARCHIVO, 'utf8', (error, datos) => {
 
 /*
     PARA DIBUJAR EL ÁRBOL AST:
-                var raiz = new Recorrido_Arbol();
-                var arbolast = parserAst.parse(datos)
-                console.log(raiz.recorrer_arbolito3(arbolast, 1));
+                   var raiz = new Recorrido_Arbol();
+                    var arbolast = parserAst.parse(datos)
+                    console.log("digraph G {\n")
+                    raiz.recorrer_arbolito3(arbolast, "./Reportes/DataReportes/ast.dot")
+                    var recorrido = raiz.getAST();
+                    for (let i = 0; i < recorrido.length; i++) {
+                        console.log(recorrido[i])
+                    }
+                    console.log("}");
+
+
+                    const {exec} = require('child_process')
+
+                    exec('dir', (error, stdout, stderr)=>{
+                        if(error){
+                            console.log("error: "+error.message)
+                            return
+                        }
+                        if(stderr){
+                            console.log("stderr: "+stderr)
+                            return
+                        }
+                        console.log("stdout: "+stdout)
+                    })
 */
 
 /*
@@ -114,8 +152,8 @@ fs.readFile(NOMBRE_ARCHIVO, 'utf8', (error, datos) => {
                 var tablaS = tablaSimbolos.grafica(tablaSimbolos);
                 const archivo = './Reportes/DataReportes/tablaSimbolos.html'
                 if(fs.existsSync(archivo)){
-                    fs.writeFileSync(archivo, tablaS, (err)=>console.log("hubo un error al crearel archivo."))
+                    fs.writeFileSync(archivo, tablaS, (err)=>console.log("hubo un error al crear el archivo."))
                 }else{
-                    fs.appendFileSync(archivo, tablaS, (err)=>console.log("hubo un error al crearel archivo."))
+                    fs.appendFileSync(archivo, tablaS, (err)=>console.log("hubo un error al crear el archivo."))
                 }
 */

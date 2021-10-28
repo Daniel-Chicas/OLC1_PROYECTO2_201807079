@@ -473,14 +473,22 @@ class LlamadasFunciones extends Expresion_1.Expresion {
                                 return { value: "", type: 4 };
                             }
                             else if (retorna.type != tipo) {
-                                throw new Error_1.Error_(this.line, this.column, "Semántico", "No se permite un retorno de tipo distinto al de la función.");
+                                if (retorna.value.type != 1 && tipo != 0) {
+                                    if (retorna.value.type != 0 && tipo != 1) {
+                                        throw new Error_1.Error_(this.line, this.column, "Semántico", "No se permite un retorno de tipo distinto al de la función.");
+                                    }
+                                }
                             }
                         }
                         else if (retorna.value.value == "undefined") {
                             return { value: "", type: 4 };
                         }
                         else if (retorna.value.type != tipo) {
-                            throw new Error_1.Error_(this.line, this.column, "Semántico", "No se permite un retorno de tipo distinto al de la función.");
+                            if (retorna.value.type != 1 && tipo != 0) {
+                                if (retorna.value.type != 0 && tipo != 1) {
+                                    throw new Error_1.Error_(this.line, this.column, "Semántico", "No se permite un retorno de tipo distinto al de la función.");
+                                }
+                            }
                         }
                     }
                     return retorna.value;

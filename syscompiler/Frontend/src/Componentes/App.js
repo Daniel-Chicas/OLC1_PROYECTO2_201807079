@@ -5,7 +5,6 @@ import { Button, Label } from 'semantic-ui-react'
 import Entrada from '../Componentes/Entrada.js'
 import Salida from '../Componentes/Salida.js'
 
-//yylloc.first_line, yylloc.first_column
 function App() {
   localStorage.setItem('actual', "")
   const [listado, setlistado] = useState([])

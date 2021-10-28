@@ -64,7 +64,7 @@ function Entrada(props) {
             className = "General"
           >
             {datosP.map((dato, index) => (
-              <Tab label={"Editor"+index} {...a11yProps(index)} />
+              <Tab label={"Pestaña "+index} {...a11yProps(index)} />
             ))}
           </Tabs>
           {datosP.map((dato, index) => (

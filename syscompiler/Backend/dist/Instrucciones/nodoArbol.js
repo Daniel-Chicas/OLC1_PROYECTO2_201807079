@@ -24,12 +24,13 @@ class nodoArbol {
 }
 exports.nodoArbol = nodoArbol;
 var id_n = 1;
+var ast = [];
 class Recorrido_Arbol {
     constructor(nombre) {
         this.nombre = nombre;
     }
     recorrer_arbolito3(nodo) {
-        var concatena;
+        var concatena = "";
         if (nodo == undefined) {
             console.error("NODO UNDEFINED");
             return;
@@ -38,17 +39,21 @@ class Recorrido_Arbol {
             nodo.id = id_n;
             id_n++;
         }
-        console.log(nodo.id + ' [label= "' + nodo.valor + '" fillcolor="#d62728" shape="circle"];');
+        concatena = nodo.id + ' [label= "' + nodo.valor + '" fillcolor="#d62728" shape="circle"];';
+        ast.push(concatena);
         if (nodo.hijos != undefined) {
             nodo.hijos.forEach(element => {
-                console.log(nodo.id + '->' + id_n + ";");
-                concatena += this.recorrer_arbolito3(element);
+                concatena = nodo.id + '->' + id_n + ";";
+                ast.push(concatena);
+                this.recorrer_arbolito3(element);
             });
         }
         else {
             console.error("NODO HIJOS UNDEFINED" + nodo);
         }
-        return concatena;
+    }
+    getAST() {
+        return ast;
     }
 }
 exports.Recorrido_Arbol = Recorrido_Arbol;
