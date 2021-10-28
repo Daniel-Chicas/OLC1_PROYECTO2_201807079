@@ -319,7 +319,7 @@ class Declaracion extends Instruccion_1.Instruccion {
                 entorno.setVariable(this.id, val.value, val.type, this.line, this.column, simbolos);
             }
             else {
-                throw new Error_1.Error_(this.line, this.column, "Semántico", "No es posible asignar asignar este valor a la variable: " + tipoId[1]);
+                throw new Error_1.Error_(this.line, this.column, "Semántico", "No es posible asignar asignar este valor a la variable: " + this.id);
             }
         }
         else {

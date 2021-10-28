@@ -1,5 +1,6 @@
 %{
-    const {nodoArbol} = require('../dist/Instrucciones/nodoArbol.js')
+    const {nodoArbol} = require('../dist/Instrucciones/nodoArbol.js')    
+    const {Error_} = require('../dist/Error/Error.js')
 %}
 
 %lex
@@ -96,7 +97,7 @@
 "%"                     return 'MOD';
 
 <<EOF>>                 return 'EOF';
-.                       {console.log(yylloc.first_line, yylloc.first_column,'Lexico',yytext)}
+.                       {var nuevoError = new Error_(yylloc.first_line, yylloc.first_column, "Léxico", 'No se reconoce el texto:'+yytext); nuevoError.setError(nuevoError)}
 /lex
 
 
@@ -136,7 +137,6 @@ general
 ;				
 
 cuerpo
-    //FALTA
     :COMENTARIO                                                 {
                                                                     $$ = new nodoArbol("Comentario", "");
                                                                     $$.agregarHijo(new nodoArbol($1, "Cuerpo"))
@@ -152,45 +152,57 @@ cuerpo
                                                                     $$.agregarHijo($5)
                                                                     $$.agregarHijo($7)
                                                                 }
-
-    //PRUEBAS
-    //|sentencias                                                     {$$= $1}
-    //|variable                                                       {$$= $1}
-    //|vectores                                                       {$$= $1}
-    //|listas                                                         {$$= $1}  
-    //|IMPRIMIR PAR_ABRE listaExpresiones PAR_CIERRA PCOMA            {
-    //                                                                    $$ = new nodoArbol("Imprimir", "");
-    //                                                                    $$.agregarHijo($3)
-    //                                                                }
+    |decl                                                       {$$= $1}       
 ;
 
 funcionMetodo
-        :tipo ID PAR_ABRE parametros PAR_CIERRA LLABRE cuerpoFunciones LLCIERRA                         {
-                                                                                                            $$ = new nodoArbol("Función", "");
-                                                                                                            $$.agregarHijo(new nodoArbol("Tipo: "+$1, "Tipo"))
-                                                                                                            $$.agregarHijo(new nodoArbol("Id: "+$2, "Id"))
-                                                                                                            $$.agregarHijo($4)
-                                                                                                            $$.agregarHijo($7)
-                                                                                                        }
-        |tipo ID PAR_ABRE PAR_CIERRA LLABRE cuerpoFunciones LLCIERRA                                    {
-                                                                                                            $$ = new nodoArbol("Función", "");
-                                                                                                            $$.agregarHijo(new nodoArbol("Tipo: "+$1, "Tipo"))
-                                                                                                            $$.agregarHijo(new nodoArbol("Id: "+$2, "Coma"))
-                                                                                                            $$.agregarHijo($6)
-                                                                                                        }
-        |VOID ID PAR_ABRE parametros PAR_CIERRA LLABRE cuerpoFunciones LLCIERRA                         {
-                                                                                                            $$ = new nodoArbol("Método", "");
-                                                                                                            $$.agregarHijo(new nodoArbol("Tipo: "+$1, "Tipo"))
-                                                                                                            $$.agregarHijo(new nodoArbol("Id: "+$2, "Id"))
-                                                                                                            $$.agregarHijo($4)
-                                                                                                            $$.agregarHijo($7)
-                                                                                                        }
-        |VOID ID PAR_ABRE PAR_CIERRA LLABRE cuerpoFunciones LLCIERRA                                    {
-                                                                                                            $$ = new nodoArbol("Método", "");
-                                                                                                            $$.agregarHijo(new nodoArbol("Tipo: "+$1, "Tipo"))
-                                                                                                            $$.agregarHijo(new nodoArbol("Id: "+$2, "Coma"))
-                                                                                                            $$.agregarHijo($6)
-                                                                                                        }
+        :tipo ID PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA                           {
+                                                                                                        $$ = new nodoArbol("Función", "");
+                                                                                                        $$.agregarHijo(new nodoArbol("Tipo: "+$1+", ID: "+$2, "Tipo"))
+                                                                                                        $$.agregarHijo($4)
+                                                                                                        $$.agregarHijo($7)
+                                                                                                    }
+        |tipo ID PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                                      {
+                                                                                                        $$ = new nodoArbol("Función", "");
+                                                                                                        $$.agregarHijo(new nodoArbol("Tipo: "+$1+", ID: "+$2, "Tipo"))
+                                                                                                        $$.agregarHijo($6)
+                                                                                                    }
+        
+        |LISTA MENOR tipo MAYOR ID PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA         {
+                                                                                                        $$ = new nodoArbol("Función", "");
+                                                                                                        $$.agregarHijo(new nodoArbol("Tipo: Lista "+$3+", ID: "+$5, "Tipo"))
+                                                                                                        $$.agregarHijo($7)
+                                                                                                        $$.agregarHijo($10)
+                                                                                                    }
+        |LISTA MENOR tipo MAYOR ID PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                    {
+                                                                                                        $$ = new nodoArbol("Función", "");
+                                                                                                        $$.agregarHijo(new nodoArbol("Tipo: Lista"+$3+", ID: "+$5, "Tipo"))
+                                                                                                        $$.agregarHijo($9)
+                                                                                                    }
+        
+        |tipo ID CABRE CCIERRA PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA             {
+                                                                                                        $$ = new nodoArbol("Función", "");
+                                                                                                        $$.agregarHijo(new nodoArbol("Tipo: Vector "+$1+", ID: "+$2, "Tipo"))
+                                                                                                        $$.agregarHijo($6)
+                                                                                                        $$.agregarHijo($9)
+                                                                                                    }
+        |tipo ID CABRE CCIERRA PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                        {
+                                                                                                        $$ = new nodoArbol("Función", "");
+                                                                                                        $$.agregarHijo(new nodoArbol("Tipo: Vector"+$1+", ID: "+$2, "Tipo"))
+                                                                                                        $$.agregarHijo($8)
+                                                                                                    }
+        
+        |VOID ID PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA                           {
+                                                                                                        $$ = new nodoArbol("Método", "");
+                                                                                                        $$.agregarHijo(new nodoArbol("Tipo: "+$1+", ID: "+$2, "Tipo"))
+                                                                                                        $$.agregarHijo($4)
+                                                                                                        $$.agregarHijo($7)
+                                                                                                    }
+        |VOID ID PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                                      {
+                                                                                                        $$ = new nodoArbol("Método", "");
+                                                                                                        $$.agregarHijo(new nodoArbol("Tipo: "+$1+", ID: "+$2, "Tipo"))
+                                                                                                        $$.agregarHijo($6)
+                                                                                                    }
 ;
 
 parametros
@@ -200,7 +212,9 @@ parametros
                                                                     $$.agregarHijo(new nodoArbol(",", "Coma"))
                                                                     $$.agregarHijo($3)
                                                                 }
-        |tipo ID                                                {$$= new nodoArbol($1+" "+$2,"Expresion")}
+        |tipo ID                                                {   $$ = new nodoArbol($1+" "+$2,"Parametro")}
+        |LISTA MENOR tipo MAYOR ID                              {   $$ = new nodoArbol($1+""+$2+""+$3+""+$4+" "+$5,"Parametro")}
+        |tipo ID CABRE CCIERRA                                  {   $$ = new nodoArbol($1+" "+$2+""+$3+""+$4,"Expresion")}
 ;
 
 cuerpoFunciones
@@ -214,25 +228,40 @@ cuerpoFunciones
 
 declaraciones
             //YA ESTÁ
-            :variable                                                       {$$= $1}
-            |vectores                                                       {$$= $1}
-            |listas                                                         {$$= $1}
-            |sentencias                                                     {$$= $1}
+            :sentencias                                                     {$$= $1}
             |IMPRIMIR PAR_ABRE listaExpresiones PAR_CIERRA PCOMA            {
                                                                                 $$ = new nodoArbol("Imprimir", "");
                                                                                 $$.agregarHijo($3)
                                                                             }
-            //SENTENCIAS DE TRANSFERENCIA
             |BREAK PCOMA                                                    {$$ = new nodoArbol("Break", "")}
             |CONTINUE PCOMA                                                 {$$ = new nodoArbol("Continue", "")}
-            |RETURN expresion PCOMA                                         {$$ = new nodoArbol("Return", "")}
-
-            //FALTA
+            |RETURN expresion PCOMA                                         {
+                                                                                $$ = new nodoArbol("Return", "")
+                                                                                $$.agregarHijo($2)
+                                                                            }
+            |RETURN PCOMA                                                   {$$ = new nodoArbol("Return", "")}
             |COMENTARIO                                                     {
                                                                                 $$ = new nodoArbol("Comentario", "");
                                                                                 $$.agregarHijo(new nodoArbol($1, "Cuerpo"))
                                                                             }
             
+            |decl                                                           {$$= $1}
+;
+
+decl
+    :variable                                                       {
+                                                                        $$ = new nodoArbol("Declaración", "");
+                                                                        $$.agregarHijo($1)
+                                                                    }
+    |vectores                                                       {
+                                                                        $$ = new nodoArbol("Declaración", "");
+                                                                        $$.agregarHijo($1)
+                                                                    }
+    |listas                                                         {
+                                                                        $$ = new nodoArbol("Declaración", "");
+                                                                        $$.agregarHijo($1)
+                                                                    } 
+    |error PCOMA                                                    {var nuevoError = new Error_(@1.first_line, @1.first_column, "Sintáctico", 'Tipo de Declaración incorrecta. Recuperado en esta línea, con \";\"".'); nuevoError.setError(nuevoError)}
 ;
 
 sentencias
@@ -425,12 +454,12 @@ variable
 
 vectores
         :tipo ID CABRE CCIERRA IGUAL NUEVO tipo CABRE expresion CCIERRA PCOMA                   {
-                                                                                                    $$ = new nodoArbol("Crear Vector Nuevo", "");
+                                                                                                    $$ = new nodoArbol("new Vector[]", "");
                                                                                                     $$.agregarHijo(new nodoArbol("Tipo: "+$1+" Id:"+$2, "TipoId"))
                                                                                                     $$.agregarHijo($9)
                                                                                                 }
         |tipo ID CABRE CCIERRA IGUAL LLABRE listaVectores LLCIERRA PCOMA                        {
-                                                                                                    $$ = new nodoArbol("Crear Vector Nuevo", "");
+                                                                                                    $$ = new nodoArbol("new Vector[]", "");
                                                                                                     $$.agregarHijo(new nodoArbol("Tipo: "+$1+" Id:"+$2, "TipoId"))
                                                                                                     $$.agregarHijo($7)
                                                                                                 }
@@ -442,7 +471,7 @@ vectores
                                                                                                     $$.agregarHijo($6)
                                                                                                 }
         |ID CABRE CCIERRA IGUAL NUEVO tipo CABRE expresion CCIERRA PCOMA                        {
-                                                                                                    $$ = new nodoArbol("Crear Vector", "");
+                                                                                                    $$ = new nodoArbol("new Vector[]", "");
                                                                                                     $$.agregarHijo(new nodoArbol("Id:"+$1, "TipoId"))
                                                                                                     $$.agregarHijo($8)
                                                                                                 }
@@ -456,24 +485,24 @@ vectores
 
 listas
     :LISTA MENOR tipo MAYOR ID IGUAL NUEVO LISTA MENOR tipo MAYOR PCOMA                     {
-                                                                                                $$ = new nodoArbol("Crear Lista Nueva", "");
+                                                                                                $$ = new nodoArbol("new DynamicList", "");
                                                                                                 $$.agregarHijo(new nodoArbol("Tipo: "+$3+" Id:"+$5, "TipoId"))
                                                                                             }
     |AGREGAR PAR_ABRE ID COMA expresion PAR_CIERRA PCOMA                                    {
-                                                                                                $$ = new nodoArbol("Agregar", "");
-                                                                                                $$.agregarHijo(new nodoArbol("Id: "+$3, "Id"))
+                                                                                                $$ = new nodoArbol("append", "");
+                                                                                                $$.agregarHijo(new nodoArbol($3, "Id"))
                                                                                                 $$.agregarHijo($5)
                                                                                             }
     |MODIFICAR PAR_ABRE ID COMA aritmeticos COMA expresion PAR_CIERRA PCOMA                 {
-                                                                                                $$ = new nodoArbol("Modificar", "");
-                                                                                                $$.agregarHijo(new nodoArbol("Id: "+$3, "Id"))
+                                                                                                $$ = new nodoArbol("setValue", "");
+                                                                                                $$.agregarHijo(new nodoArbol($3, "Id"))
                                                                                                 $$.agregarHijo($5)
                                                                                                 $$.agregarHijo(new nodoArbol("=", "Igual"))
                                                                                                 $$.agregarHijo($7)
                                                                                             }
     |LISTA MENOR tipo MAYOR ID IGUAL TOCHARARRAY PAR_ABRE expresion PAR_CIERRA  PCOMA       {
-                                                                                                $$ = new nodoArbol("Crear Lista De Caracteres", "");
-                                                                                                $$.agregarHijo(new nodoArbol("Tipo: "+$3+" Id:"+$5, "TipoId"))
+                                                                                                $$ = new nodoArbol("toCharArray", "toCharArray");
+                                                                                                $$.agregarHijo(new nodoArbol($5, "TipoId"))
                                                                                                 $$.agregarHijo(new nodoArbol("=", "Igual"))
                                                                                                 $$.agregarHijo($9)
                                                                                             }
@@ -506,57 +535,57 @@ listaExpresiones
 ;
 
 aritmeticos
-        :ID                                                                                         {   $$= new nodoArbol($1,"Id")  }
+        :ID                                                                                         {   $$= new nodoArbol($1,"I")  }
         |aritmeticos MAS aritmeticos                                                                {
                                                                                                         $$ = new nodoArbol("E", "");
                                                                                                         $$.agregarHijo($1)
                                                                                                         $$.agregarHijo(new nodoArbol("+", "Suma"))
                                                                                                         $$.agregarHijo($3)
                                                                                                     }
-        |aritmeticos MENOS aritmeticos                                                                  {
+        |aritmeticos MENOS aritmeticos                                                              {
                                                                                                         $$ = new nodoArbol("E", "");
                                                                                                         $$.agregarHijo($1)
                                                                                                         $$.agregarHijo(new nodoArbol("-", "Resta"))
                                                                                                         $$.agregarHijo($3)
                                                                                                     }
-        |aritmeticos POR aritmeticos                                                                    {
+        |aritmeticos POR aritmeticos                                                                {
                                                                                                         $$ = new nodoArbol("E", "");
                                                                                                         $$.agregarHijo($1)
                                                                                                         $$.agregarHijo(new nodoArbol("*", "Multiplicación"))
                                                                                                         $$.agregarHijo($3)
                                                                                                     }
-        |aritmeticos DIVIDIR aritmeticos                                                                {
+        |aritmeticos DIVIDIR aritmeticos                                                            {
                                                                                                         $$ = new nodoArbol("E", "");
                                                                                                         $$.agregarHijo($1)
                                                                                                         $$.agregarHijo(new nodoArbol("/", "División"))
                                                                                                         $$.agregarHijo($3)
                                                                                                     }
-        |aritmeticos MOD aritmeticos                                                                    {
+        |aritmeticos MOD aritmeticos                                                                {
                                                                                                         $$ = new nodoArbol("E", "");
                                                                                                         $$.agregarHijo($1)
                                                                                                         $$.agregarHijo(new nodoArbol("%", "Modulo"))
                                                                                                         $$.agregarHijo($3)
                                                                                                     }
-        |aritmeticos POTENCIA aritmeticos                                                               {
+        |aritmeticos POTENCIA aritmeticos                                                           {
                                                                                                         $$ = new nodoArbol("E", "");
                                                                                                         $$.agregarHijo($1)
                                                                                                         $$.agregarHijo(new nodoArbol("^", "Potencia"))
                                                                                                         $$.agregarHijo($3)
                                                                                                     }
-        |PAR_ABRE aritmeticos PAR_CIERRA                                                              {
+        |PAR_ABRE aritmeticos PAR_CIERRA                                                            {
                                                                                                         $$ = new nodoArbol("E", "");
                                                                                                         $$.agregarHijo($2)
                                                                                                     }
         
 
-        |ENTERO	                                                                                    {$$= new nodoArbol($1,"Entero")}
-        |DECIMAL                                                                                    {$$= new nodoArbol($1,"Decimal")}
-        |ID CABRE aritmeticos CCIERRA                                                                 {
+        |ENTERO	                                                                                    {   $$= new nodoArbol($1,"Entero")}
+        |DECIMAL                                                                                    {   $$= new nodoArbol($1,"Decimal")}
+        |ID CABRE aritmeticos CCIERRA                                                               {
                                                                                                         $$ = new nodoArbol("Vector: "+$1+" Posición:", "");
                                                                                                         $$.agregarHijo($3)
                                                                                                     }
         
-        |SACAR PAR_ABRE ID COMA aritmeticos PAR_CIERRA                                                {
+        |SACAR PAR_ABRE ID COMA aritmeticos PAR_CIERRA                                              {
                                                                                                         $$ = new nodoArbol("Valor de Lista: "+$3, "");
                                                                                                         $$.agregarHijo($5)
                                                                                                     }
@@ -564,9 +593,10 @@ aritmeticos
 
 casteos
         :PAR_ABRE tipo PAR_CIERRA expresion PCOMA       {
-                                                            $$ = new nodoArbol("Castear", "");
-                                                            $$.agregarHijo(new nodoArbol($2, "Tipo"))
+                                                            $$ = new nodoArbol("CASTEO", "");
                                                             $$.agregarHijo($4)
+                                                            $$.agregarHijo(new nodoArbol("-->", "To"))
+                                                            $$.agregarHijo(new nodoArbol($2, "Tipo"))
                                                         }
 ;
 
@@ -578,10 +608,10 @@ identificadores
                                                             $$.agregarHijo($3)
                                                         }
             | ID                                        {   
-                                                            $$= new nodoArbol("Identificador","Id")  
-                                                            $$.agregarHijo(new nodoArbol($1, "id"))
+                                                            $$= new nodoArbol($1,"ID")  
                                                         }
 ;
+
 
 tipo
     :INT                                                {$$= $1}
@@ -701,77 +731,79 @@ expresion
                                                                                                     $$ = new nodoArbol("Decremento", "");
                                                                                                     $$.agregarHijo($1)
                                                                                                 }
-    
-
-    //|expresion IGUAL expresion                          {$$= $1+" = "+$3}
+    |ID                                                                                         {   $$= new nodoArbol($1, "ID") }
 
     |ID CABRE expresion CCIERRA                                                                 {
                                                                                                     $$ = new nodoArbol("Valor de Vector: "+$1, "");
                                                                                                     $$.agregarHijo($3)
                                                                                                 }
     |SACAR PAR_ABRE ID COMA expresion PAR_CIERRA                                                {
-                                                                                                    $$ = new nodoArbol("Valor de Lista: "+$3, "");
+                                                                                                    $$ = new nodoArbol("getValue", "");
+                                                                                                    $$.agregarHijo(new nodoArbol($3, "ID"))
                                                                                                     $$.agregarHijo($5)
                                                                                                 }
-    
     //llamadas a métodos/funciones
-    |ID PAR_ABRE expresion PAR_CIERRA                                                           {
+    |ID PAR_ABRE listaExpresiones PAR_CIERRA                                                    {
                                                                                                     $$ = new nodoArbol("LLAMADA", "");
-                                                                                                    $$.agregarHijo(new nodoArbol($1, "Id"))
+                                                                                                    $$.agregarHijo(new nodoArbol($1, "ID"))
                                                                                                     $$.agregarHijo($3)
                                                                                                 }
     |ID PAR_ABRE PAR_CIERRA                                                                     {
-                                                                                                    $$ = new nodoArbol("LLAMADA", "");
-                                                                                                    $$.agregarHijo(new nodoArbol($1, "Id"))
+                                                                                                    $$ = new nodoArbol("LLAMADA Función", "");
+                                                                                                    $$.agregarHijo(new nodoArbol($1, "ID"))
                                                                                                 }
     
     |MINUSCULAS PAR_ABRE expresion PAR_CIERRA                                                   {
-                                                                                                    $$ = new nodoArbol("Hacer Minúsculas: ", "");
+                                                                                                    $$ = new nodoArbol("toLower", "toLower");
                                                                                                     $$.agregarHijo($3)
                                                                                                 }
     |MAYUSCULAS PAR_ABRE expresion PAR_CIERRA                                                   {
-                                                                                                    $$ = new nodoArbol("Hacer Mayúsculas: ", "");
+                                                                                                    $$ = new nodoArbol("toUpper", "toUpper");
                                                                                                     $$.agregarHijo($3)
                                                                                                 }
     |LENGTH PAR_ABRE expresion PAR_CIERRA                                                       {
-                                                                                                    $$ = new nodoArbol("Obtener Tamaño: ", "");
+                                                                                                    $$ = new nodoArbol("Length", "Length");
                                                                                                     $$.agregarHijo($3)
                                                                                                 }
     |TRUNCATE PAR_ABRE expresion PAR_CIERRA                                                     {
-                                                                                                    $$ = new nodoArbol("Truncar: ", "");
+                                                                                                    $$ = new nodoArbol("Truncate", "Truncate");
                                                                                                     $$.agregarHijo($3)
                                                                                                 }
     |ROUND PAR_ABRE expresion PAR_CIERRA                                                        {
-                                                                                                    $$ = new nodoArbol("Redondear: ", "");
+                                                                                                    $$ = new nodoArbol("Round", "Round");
                                                                                                     $$.agregarHijo($3)
                                                                                                 }
     |TYPEOF PAR_ABRE expresion PAR_CIERRA                                                       {
-                                                                                                    $$ = new nodoArbol("Tipo de Dato: ", "");
+                                                                                                    $$ = new nodoArbol("typeOf", "typeOf");
                                                                                                     $$.agregarHijo($3)
                                                                                                 }
     |TOSTRING PAR_ABRE expresion PAR_CIERRA                                                     {
-                                                                                                    $$ = new nodoArbol("Convertir en Cadena: ", "");
+                                                                                                    $$ = new nodoArbol("toString", "toString");
                                                                                                     $$.agregarHijo($3)
                                                                                                 }
     |TOCHARARRAY PAR_ABRE expresion PAR_CIERRA                                                  {
-                                                                                                    $$ = new nodoArbol("Hacer Lista: ", "");
+                                                                                                    $$ = new nodoArbol("toCharArray", "toCharArray");
                                                                                                     $$.agregarHijo($3)
                                                                                                 }
     
-    |ID                                                                                         {$$= new nodoArbol($1,"Id")}
-	|ENTERO	                                                                                    {$$= new nodoArbol($1,"Entero")}
-    |DECIMAL                                                                                    {$$= new nodoArbol($1,"Decimal")}
-    |TRUE                                                                                       {$$= new nodoArbol($1,"True")}
-    |FALSE                                                                                      {$$= new nodoArbol($1,"False")}
+	|ENTERO	                                                                                    {   $$= new nodoArbol($1,"Entero")}
+    |DECIMAL                                                                                    {   $$= new nodoArbol($1,"Decimal")}
+    |TRUE                                                                                       {   $$= new nodoArbol($1,"True")} 
+    |FALSE                                                                                      {   $$= new nodoArbol($1,"False")}
     |CARACTER                                                                                   {
                                                                                                     var cadena = $1.slice(1);
                                                                                                     var guardar = cadena.slice(0,-1);
-                                                                                                    $$= new nodoArbol(guardar,"String");
+                                                                                                    $$= new nodoArbol(guardar,"Char");
                                                                                                 }
 	|FRASE                                                                                      {   
                                                                                                     var cadena = $1.slice(1);
                                                                                                     var guardar = cadena.slice(0,-1);
                                                                                                     $$= new nodoArbol(guardar,"String");
                                                                                                 }
-    |expresion INTERROGACION expresion DPUNTOS expresion PCOMA                                  {$$= new If($1, $3, $5, @1.first_line, @1.first_column)}
+    |expresion INTERROGACION expresion DPUNTOS expresion PCOMA                                  {
+                                                                                                    $$ = new nodoArbol("if", "toCharArray");
+                                                                                                    $$.agregarHijo($1)
+                                                                                                    $$.agregarHijo($3)
+                                                                                                    $$.agregarHijo($5)
+                                                                                                }
 ;

@@ -25,8 +25,12 @@ function NavBarIncio() {
                 entrada
             })
             .then(response=>{
-                console.log(response.data)
-                localStorage.setItem('consola', JSON.stringify(["falta la consola, \nReporte de errores, \nárbol ast y \nReporte de símbolos\n\n"+response.data.message]))
+                var respuesta = "";
+                for (let i = 0; i < response.data.message.length; i++) {
+                    respuesta += response.data.message[i]+"\n"
+                }
+                console.log(respuesta)
+                localStorage.setItem('consola', JSON.stringify([respuesta]))
             })
         }catch(error){
             console.log(error)

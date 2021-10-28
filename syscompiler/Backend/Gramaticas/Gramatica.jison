@@ -20,8 +20,9 @@
     const {Switch} = require('../dist/Instrucciones/Switch.js');
     const {For} = require('../dist/Instrucciones/For.js');
     const {DoWhile} = require('../dist/Instrucciones/DoWhile.js');
-    const {Metodos} = require('../dist/Instrucciones/Metodos.js');
-    const {Llamadas} = require('../dist/Instrucciones/Llamadas.js');
+    const {MetodosFunciones} = require('../dist/Instrucciones/MetodosFunciones.js');
+    const {Funciones} = require('../dist/Instrucciones/MetodosFunciones.js');
+    const {Llamadas, LlamadasFunciones} = require('../dist/Instrucciones/Llamadas.js');
 %}
 
 %lex
@@ -118,7 +119,7 @@
 "%"                     return 'MOD';
 
 <<EOF>>                 return 'EOF';
-.                       {console.log(yylloc.first_line, yylloc.first_column,'Lexico',yytext)}
+.                       {var nuevoError = new Error_(yylloc.first_line, yylloc.first_column, "Léxico", 'No se reconoce el texto:'+yytext); nuevoError.setError(nuevoError)}
 /lex
 
 
@@ -153,28 +154,24 @@ general
 
 cuerpo
     :COMENTARIO                                                 {$$= new Declaracion("comentario", "", $1, @1.first_line, @1.first_column)}
-
-
-    //FALTA
     |funcionMetodo                                              {$$= $1}
     |START WITH ID PAR_ABRE PAR_CIERRA PCOMA                    {$$= new Llamadas($3, [], @1.first_line, @1.first_column)}
     |START WITH ID PAR_ABRE expresion PAR_CIERRA PCOMA          {$$= new Llamadas($3, $5, @1.first_line, @1.first_column)}
-    |variable                                                       {$$= $1}
-    |vectores                                                       {$$= $1}
-    |listas                                                         {$$ = $1}  
-
-    //PRUEBAS
-    //|sentencias                                                     {$$= $1}
-    //|BREAK PCOMA                                                    {$$=new Break(@1.first_line, @1.first_column)}
-    //|CONTINUE PCOMA                                                 {$$=new Continue(@1.firstfirst_line, @1.first_column)}
-    //|RETURN expresion PCOMA                                         {$$=new Return(@1.first_line, @1.first_column)} 
+    |decl                                                       {$$= $1}       
 ;
 
 funcionMetodo
-        :tipo ID PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA                         {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6+" "+$7+" "+$8}
-        |tipo ID PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                                    {$$= $1+" "+$2+" "+$3+" "+$4+" "+$5+" "+$6+" "+$7}
-        |VOID ID PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA                         {$$= new Metodos($2, $4, $7, @1.first_line, @1.first_column)}
-        |VOID ID PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                                    {$$= new Metodos($2, [], $6, @1.first_line, @1.first_column)}
+        :tipo ID PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA                           {$$= new Funciones($1,$2, $4, $7, @1.first_line, @1.first_column)}
+        |tipo ID PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                                      {$$= new Funciones($1,$2, [], $7, @1.first_line, @1.first_column)}
+        
+        |LISTA MENOR tipo MAYOR ID PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA         {$$= new Funciones("lista&"+$3,$5, $7, $10, @1.first_line, @1.first_column)}
+        |LISTA MENOR tipo MAYOR ID PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                    {$$= new Funciones("lista&"+$3,$5, [], $9, @1.first_line, @1.first_column)}
+        
+        |tipo ID CABRE CCIERRA PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA             {$$= new Funciones("vector&"+$1, $6, $7, $9, @1.first_line, @1.first_column)}
+        |tipo ID CABRE CCIERRA PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                        {$$= new Funciones("vector&"+$1, [], $7, $8, @1.first_line, @1.first_column)}
+        
+        |VOID ID PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA                           {$$= new MetodosFunciones($2, $4, $7, @1.first_line, @1.first_column)}
+        |VOID ID PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                                      {$$= new MetodosFunciones($2, [], $6, @1.first_line, @1.first_column)}
 ;
 
 parametros
@@ -190,16 +187,22 @@ cuerpoFunciones
 ;
 
 declaraciones
-            :variable                                                       {$$= $1} 
-            |vectores                                                       {$$= $1}
-            |listas                                                         {$$ = $1}
-            |sentencias                                                     {$$= $1}
+            :sentencias                                                     {$$= $1}
             |IMPRIMIR PAR_ABRE listaExpresiones PAR_CIERRA PCOMA            {$$= new Imprimir($3, @1.first_line, @1.first_column)}           
             //SENTENCIAS DE TRANSFERENCIA
             |BREAK PCOMA                                                    {$$=new Break(@1.first_line, @1.first_column)}
             |CONTINUE PCOMA                                                 {$$=new Continue(@1.firstfirst_line, @1.first_column)}
-            |RETURN expresion PCOMA                                         {$$=new Return(@1.first_line, @1.first_column)}
+            |RETURN expresion PCOMA                                         {$$=new Return($2, @1.first_line, @1.first_column)}
+            |RETURN PCOMA                                                   {$$=new Return(new Literal("undefined",TipoLiteral.CADENA, @1.first_line, @1.first_column), @1.first_line, @1.first_column)}
             |COMENTARIO                                                     {$$= new Declaracion("comentario", "", $1, @1.first_line, @1.first_column)}
+            |decl                                                           {$$= $1}
+;
+
+decl
+    :variable                                                       {$$= $1} 
+    |vectores                                                       {$$= $1}
+    |listas                                                         {$$ = $1}
+    |error PCOMA                                                    {var nuevoError = new Error_(@1.first_line, @1.first_column, "Sintáctico", 'Tipo de Declaración incorrecta. Recuperado en esta línea, con \";\"".'); nuevoError.setError(nuevoError)}
 ;
 
 sentencias
@@ -329,7 +332,6 @@ variable
         |ID MENOS MENOS PCOMA                                                                   {$$= new Declaracion("", $1, new Aritmetica(new Acceso($1, @1.first_line, @1.first_column), new Literal("1",TipoLiteral.ENTERO, @1.first_line, @1.first_column), TipoAritmetica.RESTA, @1.first_line, @1.first_column),@1.first_line, @1.first_column)}
         |ID PAR_ABRE listaExpresiones PAR_CIERRA PCOMA                                          {$$= new Llamadas($1, $3, @1.first_line, @1.first_column)}
         |ID PAR_ABRE PAR_CIERRA PCOMA                                                           {$$= new Llamadas($1, [], @1.first_line, @1.first_column)}
-    
 ;
 
 vectores
@@ -425,8 +427,8 @@ expresion
     |SACAR PAR_ABRE ID COMA expresion PAR_CIERRA                                                {$$= new AccesoListas($3, $5, @1.first_line, @1.first_column)}
     
     //llamadas a métodos/funciones
-    |ID PAR_ABRE listaExpresiones PAR_CIERRA                                                    //{$$= new Llamadas($1, $3, @1.first_line, @1.first_column)}
-    |ID PAR_ABRE PAR_CIERRA                                                                     //{$$= new Llamadas($1, [], @1.first_line, @1.first_column)}
+    |ID PAR_ABRE listaExpresiones PAR_CIERRA                                                    {$$= new LlamadasFunciones($1, $3, @1.first_line, @1.first_column)}
+    |ID PAR_ABRE PAR_CIERRA                                                                     {$$= new LlamadasFunciones($1, $3, @1.first_line, @1.first_column)}
     
     |MINUSCULAS PAR_ABRE expresion PAR_CIERRA                                                   {$$= new Minusculas($3, @1.first_line, @1.first_column)}
     |MAYUSCULAS PAR_ABRE expresion PAR_CIERRA                                                   {$$= new Mayusculas($3, @1.first_line, @1.first_column)}

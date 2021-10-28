@@ -1,29 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CuerpoSentencias = void 0;
-const Entorno_1 = require("../Ambitos/Entorno");
 const Error_1 = require("../Error/Error");
 const Instruccion_1 = require("./Instruccion");
-const Metodos_1 = require("./Metodos");
+const MetodosFunciones_1 = require("./MetodosFunciones");
 class CuerpoSentencias extends Instruccion_1.Instruccion {
     constructor(codigo, line, column) {
         super(line, column);
         this.codigo = codigo;
     }
     execute(entorno, simbolos) {
-        const sentencia = new Entorno_1.Entorno(entorno, "Sentencia");
         for (const instruccion of this.codigo) {
-            try {
-                if (instruccion instanceof Metodos_1.Metodos) {
-                    throw new Error_1.Error_(this.line, this.column, "Semántico", "No se permiten funciones anidadas.");
-                }
-                const elemento = instruccion.execute(sentencia, simbolos);
-                if (elemento != null || elemento != undefined) {
-                    return elemento;
-                }
+            if (instruccion instanceof MetodosFunciones_1.MetodosFunciones) {
+                throw new Error_1.Error_(this.line, this.column, "Semántico", "No se permiten funciones anidadas.");
             }
-            catch (error) {
-                console.log(error);
+            const elemento = instruccion.execute(entorno, simbolos);
+            if (elemento != null || elemento != undefined) {
+                return elemento;
             }
         }
     }

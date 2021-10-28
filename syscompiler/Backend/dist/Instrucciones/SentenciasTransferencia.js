@@ -26,8 +26,13 @@ class Return extends Instruccion_1.Instruccion {
         this.devuelve = devuelve;
     }
     execute(entorno, simbolos) {
-        var value = this.devuelve.execute(entorno, simbolos);
-        return { value: value, type: "return", line: this.line, column: this.column };
+        if (this.devuelve == null) {
+            return { value: null, type: "return", line: this.line, column: this.column };
+        }
+        else {
+            var value = this.devuelve.execute(entorno, simbolos);
+            return { value: value, type: "return", line: this.line, column: this.column };
+        }
     }
 }
 exports.Return = Return;

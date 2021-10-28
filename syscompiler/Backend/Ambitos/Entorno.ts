@@ -1,17 +1,19 @@
 import { Error_ } from "../Error/Error";
 import { Type } from "../Expresiones/Retorno";
-import { Metodos } from "../Instrucciones/Metodos";
+import { Funciones, MetodosFunciones } from "../Instrucciones/MetodosFunciones";
 import { simboloT } from "../Reportes/simboloT";
 import { TablaSimbolos } from "../Reportes/TablaSimbolos";
 import { Simbolo } from "./Simbolo";
 
 export class Entorno{
     public variables: Map<string, Simbolo>;
-    public metodos: Map<string, Metodos>
+    public metodos: Map<string, MetodosFunciones>;
+    public funciones: Map<string, Funciones>;
 
     constructor(public anterior: Entorno | null, public id: string){
         this.variables = new Map()
         this.metodos = new Map()
+        this.funciones = new Map()
     }
 
     public getVariable(id: string): Simbolo{
@@ -42,10 +44,10 @@ export class Entorno{
         }
         this.variables.set(id, new Simbolo(valor, id, type, line, column))
         if(type == Type.ENTERO){
-            var simbTab = new simboloT(id, "VARIABLE", "ENTERO", this.id, line, column)
+            var simbTab = new simboloT(id, "VARIABLE", "INT", this.id, line, column)
             tabla.setVariable(simbTab, id+"-"+this.id)
         }else if(type == Type.DOUBLE){
-            var simbTab = new simboloT(id, "VARIABLE", "DECIMAL", this.id, line, column)
+            var simbTab = new simboloT(id, "VARIABLE", "DOUBLE", this.id, line, column)
             tabla.setVariable(simbTab, id+"-"+this.id)
         }else if(type == Type.BOOLEAN){
             var simbTab = new simboloT(id, "VARIABLE", "BOOLEAN", this.id, line, column)
@@ -57,10 +59,10 @@ export class Entorno{
             var simbTab = new simboloT(id, "VARIABLE", "STRING", this.id, line, column)
             tabla.setVariable(simbTab, id+"-"+this.id)
         }else if(type == Type.VECTORENT){
-            var simbTab = new simboloT(id, "VECTOR", "ENTERO", this.id, line, column)
+            var simbTab = new simboloT(id, "VECTOR", "INT", this.id, line, column)
             tabla.setVariable(simbTab, id+"-"+this.id)
         }else if(type == Type.VECTORDOU){
-            var simbTab = new simboloT(id, "VECTOR", "DECIMAL", this.id, line, column)
+            var simbTab = new simboloT(id, "VECTOR", "DOUBLE", this.id, line, column)
             tabla.setVariable(simbTab, id+"-"+this.id)
         }else if(type == Type.VECTORBOO){
             var simbTab = new simboloT(id, "VECTOR", "BOOLEAN", this.id, line, column)
@@ -72,10 +74,10 @@ export class Entorno{
             var simbTab = new simboloT(id, "VECTOR", "STRING", this.id, line, column)
             tabla.setVariable(simbTab, id+"-"+this.id)
         }else if(type == Type.LISTAENT){
-            var simbTab = new simboloT(id, "LISTA", "ENTERO", this.id, line, column)
+            var simbTab = new simboloT(id, "LISTA", "INT", this.id, line, column)
             tabla.setVariable(simbTab, id+"-"+this.id)
         }else if(type == Type.LISTADOU){
-            var simbTab = new simboloT(id, "LISTA", "DECIMAL", this.id, line, column)
+            var simbTab = new simboloT(id, "LISTA", "DOUBLE", this.id, line, column)
             tabla.setVariable(simbTab, id+"-"+this.id)
         }else if(type == Type.LISTABOO){
             var simbTab = new simboloT(id, "LISTA", "BOOLEAN", this.id, line, column)
@@ -92,10 +94,87 @@ export class Entorno{
         }
     }
 
-    public guardarMetodo(id: string, metodo: Metodos){
+    public guardarMetodo(id: string, metodo: MetodosFunciones, tabla: TablaSimbolos){
         this.metodos.set(id, metodo)
+        var simbTab = new simboloT(id, "MÉTODO", "VOID", this.id, metodo.line, metodo.column)
+        tabla.setVariable(simbTab, id+"-"+this.id)
     }
 
+    public guardarFuncion(id: string, funcion: Funciones, tabla: TablaSimbolos){
+        this.funciones.set(id, funcion)
+        if(funcion.tipo.toString().toLowerCase() == "int" ){
+            var simbTab = new simboloT(id, "FUNCION", "INT", this.id, funcion.line, funcion.column)
+            tabla.setVariable(simbTab, id+"-"+this.id)
+        }else if(funcion.tipo.toString().toLowerCase() == "double"){
+            var simbTab = new simboloT(id, "FUNCION", "DOUBLE", this.id, funcion.line, funcion.column)
+            tabla.setVariable(simbTab, id+"-"+this.id)
+        }else if(funcion.tipo.toString().toLowerCase() == "boolean"){
+            var simbTab = new simboloT(id, "FUNCION", "BOOLEAN", this.id, funcion.line, funcion.column)
+            tabla.setVariable(simbTab, id+"-"+this.id)
+        }else if(funcion.tipo.toString().toLowerCase() == "char"){
+            var simbTab = new simboloT(id, "FUNCION", "CHAR", this.id, funcion.line, funcion.column)
+            tabla.setVariable(simbTab, id+"-"+this.id)
+        }else if(funcion.tipo.toString().toLowerCase() == "string"){
+            var simbTab = new simboloT(id, "FUNCION", "STRING", this.id, funcion.line, funcion.column)
+            tabla.setVariable(simbTab, id+"-"+this.id)
+        }else if(funcion.tipo.toString().toLowerCase() == "int"){
+            var simbTab = new simboloT(id, "FUNCION", "INT", this.id, funcion.line, funcion.column)
+            tabla.setVariable(simbTab, id+"-"+this.id)
+        }else if(funcion.tipo.toString().toLowerCase() == "double"){
+            var simbTab = new simboloT(id, "FUNCION", "DOUBLE", this.id, funcion.line, funcion.column)
+            tabla.setVariable(simbTab, id+"-"+this.id)
+        }else{
+            var vecli = funcion.tipo.split("&")
+            if(vecli[0].toString().toLowerCase() == "vector"){
+                if(vecli[1].toString().toLowerCase() == "int"){
+                    var simbTab = new simboloT(id, "FUNCION", "VECTOR INT", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "double"){
+                    var simbTab = new simboloT(id, "FUNCION", "VECTOR DOUBLE", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "boolean"){
+                    var simbTab = new simboloT(id, "FUNCION", "VECTOR BOOLEAN", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "char"){
+                    var simbTab = new simboloT(id, "FUNCION", "VECTOR CHAR", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "string"){
+                    var simbTab = new simboloT(id, "FUNCION", "VECTOR STRING", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "int"){
+                    var simbTab = new simboloT(id, "FUNCION", "VECTOR INT", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "double"){
+                    var simbTab = new simboloT(id, "FUNCION", "VECTOR DOUBLE", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }
+            }else if(vecli[0].toString().toLowerCase() == "lista"){
+                if(vecli[1].toString().toLowerCase() == "int"){
+                    var simbTab = new simboloT(id, "FUNCION", "LISTA INT", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "double"){
+                    var simbTab = new simboloT(id, "FUNCION", "LISTA DOUBLE", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "boolean"){
+                    var simbTab = new simboloT(id, "FUNCION", "LISTA BOOLEAN", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "char"){
+                    var simbTab = new simboloT(id, "FUNCION", "LISTA CHAR", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "string"){
+                    var simbTab = new simboloT(id, "FUNCION", "LISTA STRING", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "int"){
+                    var simbTab = new simboloT(id, "FUNCION", "LISTA INT", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }else if(vecli[1].toString().toLowerCase() == "double"){
+                    var simbTab = new simboloT(id, "FUNCION", "LISTA DOUBLE", this.id, funcion.line, funcion.column)
+                    tabla.setVariable(simbTab, id+"-"+this.id)
+                }
+            }
+        }
+    }
+    
     public getMetodo(id: string){
         let env: Entorno | null = this;
         while(env != null){
@@ -106,4 +185,17 @@ export class Entorno{
         }
         return null
     }
+
+
+    public getFuncion(id: string){
+        let env: Entorno | null = this;
+        while(env != null){
+            if(env.funciones.has(id)){
+                return env.funciones.get(id)
+            }
+            env = env.anterior;
+        }
+        return null
+    }
+
 }

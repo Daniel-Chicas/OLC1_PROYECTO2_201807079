@@ -24,12 +24,16 @@ export class Continue extends Instruccion{
 }
 
 export class Return extends Instruccion{
-    constructor(private devuelve: Expresion, line: number, column: number){
+    constructor(private devuelve: Expresion | null, line: number, column: number){
         super(line, column)
     }
 
     public execute(entorno: Entorno, simbolos: TablaSimbolos){
-        var value = this.devuelve.execute(entorno, simbolos)
-        return {value: value, type: "return", line: this.line, column: this.column }
+        if(this.devuelve == null){
+            return {value: null, type: "return", line: this.line, column: this.column }
+        }else{
+            var value = this.devuelve.execute(entorno, simbolos)
+            return {value: value, type: "return", line: this.line, column: this.column }
+        }
     }
 }

@@ -276,7 +276,7 @@ export class Declaracion extends Instruccion{
             if(aprobado){
                 entorno.setVariable(this.id, val.value, val.type, this.line, this.column, simbolos)
             }else{
-                throw new Error_(this.line, this.column, "Semántico", "No es posible asignar asignar este valor a la variable: "+tipoId[1])
+                throw new Error_(this.line, this.column, "Semántico", "No es posible asignar asignar este valor a la variable: "+this.id)
             }
         }else{
             const entornoIngresa =  entorno;

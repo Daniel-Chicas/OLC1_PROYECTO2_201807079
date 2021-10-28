@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Metodos = void 0;
+exports.MetodosFunciones = void 0;
 const Instruccion_1 = require("./Instruccion");
-class Metodos extends Instruccion_1.Instruccion {
+class MetodosFunciones extends Instruccion_1.Instruccion {
     constructor(id, parametros, cuerpo, line, column) {
         super(line, column);
         this.id = id;
@@ -13,5 +13,5 @@ class Metodos extends Instruccion_1.Instruccion {
         entorno.guardarMetodo(this.id, this);
     }
 }
-exports.Metodos = Metodos;
+exports.MetodosFunciones = MetodosFunciones;
 //# sourceMappingURL=Metodos.js.map
