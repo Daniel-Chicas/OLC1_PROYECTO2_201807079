@@ -1,22 +1,23 @@
 import React from 'react'
 import {BrowserRouter as Router, Route} from 'react-router-dom'
-import App from './componentes/App'
-import Errores from './componentes/Errores'
-import Ast from './componentes/Ast'
-import Simbolos from './componentes/Simbolos'
-import './App.css'
+import App from './Componentes/App'
+import Errores from './Componentes/Errores'
+import Ast from './Componentes/Ast'
+import Simbolos from './Componentes/Simbolos'
 
-function App() {
+function General() {
+    
+    //window.location.href = "http://localhost:3000/App";
   return (
   <>
       <Router>
-        <Route path="/App" component={CargaArchivosjson} />
-        <Route path="/Errores" component={Productos}/>
-        <Route path="/AST" component={ListadoTiendas}/>
-        <Route path="/Simbolos" component={Productos}/>
+        <Route path="/App" component={App} />
+        <Route path="/Errores" component={Errores}/>
+        <Route path="/AST" component={Ast}/>
+        <Route path="/Simbolos" component={Simbolos}/>
       </Router>
    </>
   )
 }
 
-export default App;
+export default General;

@@ -59,4 +59,8 @@ export class Recorrido_Arbol{
         return ast
     }
 
+    public clearAST(){
+        ast = []
+    }
+
 }

@@ -100,10 +100,6 @@ class Entorno {
             var simbTab = new simboloT_1.simboloT(id, "LISTA", "STRING", this.id, line, column);
             tabla.setVariable(simbTab, id + "-" + this.id);
         }
-        else if (type == Retorno_1.Type.COMENTARIO) {
-            var simbTab = new simboloT_1.simboloT(id, "COMENTARIO", "COMENTARIO", this.id, line, column);
-            tabla.setVariable(simbTab, id + "-" + this.id);
-        }
     }
     guardarMetodo(id, metodo, tabla) {
         this.metodos.set(id, metodo);

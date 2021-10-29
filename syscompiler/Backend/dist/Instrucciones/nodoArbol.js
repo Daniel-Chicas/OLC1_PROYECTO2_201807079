@@ -55,6 +55,9 @@ class Recorrido_Arbol {
     getAST() {
         return ast;
     }
+    clearAST() {
+        ast = [];
+    }
 }
 exports.Recorrido_Arbol = Recorrido_Arbol;
 //# sourceMappingURL=nodoArbol.js.map

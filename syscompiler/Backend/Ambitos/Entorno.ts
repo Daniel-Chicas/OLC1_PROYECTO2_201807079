@@ -88,9 +88,6 @@ export class Entorno{
         }else if(type == Type.LISTACAD){
             var simbTab = new simboloT(id, "LISTA", "STRING", this.id, line, column)
             tabla.setVariable(simbTab, id+"-"+this.id)
-        }else if(type == Type.COMENTARIO){
-            var simbTab = new simboloT(id, "COMENTARIO", "COMENTARIO", this.id, line, column)
-            tabla.setVariable(simbTab, id+"-"+this.id)
         }
     }
 

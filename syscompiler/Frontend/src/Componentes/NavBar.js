@@ -37,26 +37,7 @@ function NavBarIncio() {
         }        
         window.location.reload()
     }
-
-    async function ast(e){
-        actual = localStorage.getItem('actual')
-        lastChar = actual[actual.length -1];
-        lastChar = parseInt(lastChar)
-        datosPes = localStorage.getItem('datosPes')
-        datosP = JSON.parse(datosPes);
-        var entrada = datosP[lastChar];
-        try{
-            await axios.post("http://localhost:5000/ast", {
-                entrada
-            })
-            .then(response=>{
-                console.log(response.data.message)
-            })
-        }catch(error){
-            console.log(error)
-        }
-    }
-
+    
     const leerArchivo = (e) =>{
         const file = e.target.files[0];
         if(!file) return;
@@ -99,11 +80,12 @@ function NavBarIncio() {
         localStorage.setItem('consola', JSON.stringify(["falta la consola, \nReporte de errores, \nárbol ast y \nReporte de símbolos"]))
         post();
     }else if (activo === "orange"){
-        window.location.reload()
+        window.location.href = "http://localhost:3000/Errores"
     }else if (activo === "teal"){
-        ast();
+        //ast();
+        window.location.href = "http://localhost:3000/AST"
     }else if (activo === "violet"){
-        window.location.reload()
+        window.location.href = "http://localhost:3000/Simbolos"
     }
     return (
        <Menu inverted className="Nav" >

@@ -37,7 +37,7 @@ fs.readFile(NOMBRE_ARCHIVO, 'utf8', (error, datos) => {
         }else{
             fs.appendFileSync(archivo, recorrido, (err)=>console.log("hubo un error al crear el archivo."))
         }
-        exec('dot -T png ast.dot -o ast.png', (error, stdout, stderr)=>{
+        exec('dot -T pdf ast.dot -o ast.pdf', (error, stdout, stderr)=>{
             if(error){
                 console.log("error: "+error.message)
                 return
@@ -48,9 +48,12 @@ fs.readFile(NOMBRE_ARCHIVO, 'utf8', (error, datos) => {
             }
             console.log("stdout: "+stdout)
         })
-
+        fs.renameSync("./ast.pdf", "../Frontend/src/Archivospdf/ast.pdf", (error)=>{
+            console.log(error)
+        })
     }
 
+    
     var ast;
     try {
         ast = parser.parse(datos);
@@ -62,7 +65,6 @@ fs.readFile(NOMBRE_ARCHIVO, 'utf8', (error, datos) => {
     var listaErrores = errores.getLista();
     if(listaErrores.length != 0){
         console.log("hay errores:", listaErrores)
-        //RETORNAR ERRORES
     }else{
         const env = new entorno(null, "Global")
         const tablaSimbolos = new simbolos("", null)
@@ -149,11 +151,11 @@ fs.readFile(NOMBRE_ARCHIVO, 'utf8', (error, datos) => {
 
 /*
     HACER LA TABLA DE SÍMBOLOS
-                var tablaS = tablaSimbolos.grafica(tablaSimbolos);
-                const archivo = './Reportes/DataReportes/tablaSimbolos.html'
-                if(fs.existsSync(archivo)){
-                    fs.writeFileSync(archivo, tablaS, (err)=>console.log("hubo un error al crear el archivo."))
-                }else{
-                    fs.appendFileSync(archivo, tablaS, (err)=>console.log("hubo un error al crear el archivo."))
-                }
+        var tablaS = tablaSimbolos.grafica(tablaSimbolos);
+        const archivo = './Reportes/DataReportes/tablaSimbolos.html'
+        if(fs.existsSync(archivo)){
+            fs.writeFileSync(archivo, tablaS, (err)=>console.log("hubo un error al crear el archivo."))
+        }else{
+            fs.appendFileSync(archivo, tablaS, (err)=>console.log("hubo un error al crear el archivo."))
+        }
 */
