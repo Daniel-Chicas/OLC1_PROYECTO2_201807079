@@ -11,4 +11,8 @@ export class Error_ {
     public getLista(){
         return lista
     }
+
+    public clearLista(){
+        lista = []
+    }
 }

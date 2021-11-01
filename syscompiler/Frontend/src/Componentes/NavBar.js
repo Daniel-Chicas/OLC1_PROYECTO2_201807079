@@ -82,7 +82,6 @@ function NavBarIncio() {
     }else if (activo === "orange"){
         window.location.href = "http://localhost:3000/Errores"
     }else if (activo === "teal"){
-        //ast();
         window.location.href = "http://localhost:3000/AST"
     }else if (activo === "violet"){
         window.location.href = "http://localhost:3000/Simbolos"

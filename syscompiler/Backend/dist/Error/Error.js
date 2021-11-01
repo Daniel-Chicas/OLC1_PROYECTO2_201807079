@@ -15,6 +15,9 @@ class Error_ {
     getLista() {
         return lista;
     }
+    clearLista() {
+        lista = [];
+    }
 }
 exports.Error_ = Error_;
 //# sourceMappingURL=Error.js.map
