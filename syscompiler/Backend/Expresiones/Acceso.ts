@@ -34,6 +34,9 @@ export class AccesoVectores extends Expresion{
                 throw new Error_(this.line, this.column, "Semántico", "Debe ingresar un vector, lista o cadena para encontrar el tamaño: "+this.id)
             }
             if(posi.type == Type.ENTERO){
+                if(posi.value >= val.valor.length){
+                    throw new Error_(this.line, this.column, "Semántico", "No se puede ingresar a la posición: "+posi.value+".")
+                }
                 return {value: val.valor[posi.value].value, type: val.type-60}
             }else{
                 throw new Error_(this.line, this.column, "Semántico", "Debe colocar un entero para declarar el tamaño del vector.")

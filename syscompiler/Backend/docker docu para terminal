@@ -1,0 +1,21 @@
+
+
+
+----------------------------------------PARA IMAGENES Y CONTENEDORES EN DOCKER-----------------------------------
+
+
+docker build . -t *nombre de la imagen*									para construir la imagen
+
+docker images 															para ver las imagenes creadas
+
+docker ps -a															para ver todos los contenedores (estén corriendo o no)
+
+docker rmi *nombre de la imagen* -f										para borrar una imagen
+
+docker rm *nombre del contenedor* -f									para borrar un contenedor
+
+docker run -d -p *puerto*:*puerto* *nombre de la imagen*				construir el contenedor
+
+docker start *id del contenedor*										para levantar el contenedor
+
+docker logs *id del contenedor*											para ver lo que imprime el servidor

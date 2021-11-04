@@ -77,12 +77,27 @@ function NavBarIncio() {
         }
         window.location.reload()
     }else if (activo === "yellow"){
-        localStorage.setItem('consola', JSON.stringify(["falta la consola, \nReporte de errores, \nárbol ast y \nReporte de símbolos"]))
+        //localStorage.setItem('consola', JSON.stringify(["Bienvenido a mi proyecto de Compiladores 1"]))
         post();
     }else if (activo === "orange"){
         window.location.href = "http://localhost:3000/Errores"
     }else if (activo === "teal"){
-        window.location.href = "http://localhost:3000/AST"
+        hacerAST()
+    async function hacerAST(){
+        var actual = localStorage.getItem('actual')
+        var lastChar = actual[actual.length -1];
+        lastChar = parseInt(lastChar)
+        var datosPes = localStorage.getItem('datosPes')
+        var datosP = JSON.parse(datosPes);
+        var entrada = datosP[lastChar];
+        await axios.post("http://localhost:5000/ast", {
+            entrada
+        })
+        .then(response=>{
+            console.log(response)
+        })
+        window.location.reload()
+    }
     }else if (activo === "violet"){
         window.location.href = "http://localhost:3000/Simbolos"
     }

@@ -7,8 +7,6 @@ import { TablaSimbolos } from "../Reportes/TablaSimbolos";
 export class Logica extends Expresion{
     constructor(private left: Expresion, private right: Expresion, private tipo: TipoLogica, line: number, column: number) {
         super(line, column);
-        //var x = this.execute();
-        //console.log(x)
     }
 
     public execute(entorno: Entorno, simbolos: TablaSimbolos): Retorno {

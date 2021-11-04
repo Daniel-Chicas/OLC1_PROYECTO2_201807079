@@ -15,26 +15,122 @@ class Relacional extends Expresion_1.Expresion {
         const leftValue = this.left.execute(entorno, simbolos);
         const rightValue = this.right.execute(entorno, simbolos);
         if (this.tipo == TipoRelacional.IGUAL) {
+            if (leftValue.type == 0 && rightValue.type == 0) {
+                const result = Number(leftValue.value) == Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 1) {
+                const result = Number(leftValue.value) == Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 0) {
+                const result = Number(leftValue.value) == Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 0 && rightValue.type == 1) {
+                const result = Number(leftValue.value) == Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
             const result = leftValue.value == rightValue.value;
             return { value: result, type: Retorno_1.Type.BOOLEAN };
         }
         else if (this.tipo == TipoRelacional.DIFERENCIA) {
+            if (leftValue.type == 0 && rightValue.type == 0) {
+                const result = Number(leftValue.value) != Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 1) {
+                const result = Number(leftValue.value) != Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 0) {
+                const result = Number(leftValue.value) != Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 0 && rightValue.type == 1) {
+                const result = Number(leftValue.value) != Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
             const result = leftValue.value != rightValue.value;
             return { value: result, type: Retorno_1.Type.BOOLEAN };
         }
         else if (this.tipo == TipoRelacional.MENOR) {
+            if (leftValue.type == 0 && rightValue.type == 0) {
+                const result = Number(leftValue.value) < Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 1) {
+                const result = Number(leftValue.value) < Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 0) {
+                const result = Number(leftValue.value) < Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 0 && rightValue.type == 1) {
+                const result = Number(leftValue.value) < Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
             const result = leftValue.value < rightValue.value;
             return { value: result, type: Retorno_1.Type.BOOLEAN };
         }
         else if (this.tipo == TipoRelacional.MENORI) {
+            if (leftValue.type == 0 && rightValue.type == 0) {
+                const result = Number(leftValue.value) <= Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 1) {
+                const result = Number(leftValue.value) <= Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 0) {
+                const result = Number(leftValue.value) <= Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 0 && rightValue.type == 1) {
+                const result = Number(leftValue.value) <= Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
             const result = leftValue.value <= rightValue.value;
             return { value: result, type: Retorno_1.Type.BOOLEAN };
         }
         else if (this.tipo == TipoRelacional.MAYOR) {
+            if (leftValue.type == 0 && rightValue.type == 0) {
+                const result = Number(leftValue.value) > Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 1) {
+                const result = Number(leftValue.value) > Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 0) {
+                const result = Number(leftValue.value) > Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 0 && rightValue.type == 1) {
+                const result = Number(leftValue.value) > Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
             const result = leftValue.value > rightValue.value;
             return { value: result, type: Retorno_1.Type.BOOLEAN };
         }
         else if (this.tipo == TipoRelacional.MAYORI) {
+            if (leftValue.type == 0 && rightValue.type == 0) {
+                const result = Number(leftValue.value) >= Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 1) {
+                const result = Number(leftValue.value) >= Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 1 && rightValue.type == 0) {
+                const result = Number(leftValue.value) >= Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
+            else if (leftValue.type == 0 && rightValue.type == 1) {
+                const result = Number(leftValue.value) >= Number(rightValue.value);
+                return { value: result, type: Retorno_1.Type.BOOLEAN };
+            }
             const result = leftValue.value >= rightValue.value;
             return { value: result, type: Retorno_1.Type.BOOLEAN };
         }

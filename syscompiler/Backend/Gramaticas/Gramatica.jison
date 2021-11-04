@@ -119,7 +119,7 @@
 "%"                     return 'MOD';
 
 <<EOF>>                 return 'EOF';
-.                       {var nuevoError = new Error_(yylloc.first_line, yylloc.first_column, "Léxico", 'No se reconoce el texto:'+yytext); nuevoError.setError(nuevoError)}
+.                       {var nuevoError = new Error_(yylloc.first_line, yylloc.first_column, "Léxico", 'No se reconoce el texto: '+yytext); nuevoError.setError(nuevoError)}
 /lex
 
 
@@ -167,8 +167,8 @@ funcionMetodo
         |LISTA MENOR tipo MAYOR ID PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA         {$$= new Funciones("lista&"+$3,$5, $7, $10, @1.first_line, @1.first_column)}
         |LISTA MENOR tipo MAYOR ID PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                    {$$= new Funciones("lista&"+$3,$5, [], $9, @1.first_line, @1.first_column)}
         
-        |tipo ID CABRE CCIERRA PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA             {$$= new Funciones("vector&"+$1, $6, $7, $9, @1.first_line, @1.first_column)}
-        |tipo ID CABRE CCIERRA PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                        {$$= new Funciones("vector&"+$1, [], $7, $8, @1.first_line, @1.first_column)}
+        |tipo ID CABRE CCIERRA PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA             {$$= new Funciones("vector&"+$1, $2, $6, $9, @1.first_line, @1.first_column)}
+        |tipo ID CABRE CCIERRA PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                        {$$= new Funciones("vector&"+$1, $2, [], $8, @1.first_line, @1.first_column)}
         
         |VOID ID PAR_ABRE parametros PAR_CIERRA LLABRE statement LLCIERRA                           {$$= new MetodosFunciones($2, $4, $7, @1.first_line, @1.first_column)}
         |VOID ID PAR_ABRE PAR_CIERRA LLABRE statement LLCIERRA                                      {$$= new MetodosFunciones($2, [], $6, @1.first_line, @1.first_column)}
@@ -453,5 +453,5 @@ expresion
                                                                                                     var guardar = cadena.slice(0,-1)
                                                                                                     $$= new Literal(guardar,TipoLiteral.CADENA, @1.first_line, @1.first_column)
                                                                                                 }
-    |expresion INTERROGACION expresion DPUNTOS expresion PCOMA                                  {$$= new IfAlterno($1, $3, $5, @1.first_line, @1.first_column)}
+    |expresion INTERROGACION expresion DPUNTOS expresion                                   {$$= new IfAlterno($1, $3, $5, @1.first_line, @1.first_column)}
 ;

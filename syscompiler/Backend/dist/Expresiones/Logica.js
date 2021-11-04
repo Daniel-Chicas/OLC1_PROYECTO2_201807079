@@ -10,8 +10,6 @@ class Logica extends Expresion_1.Expresion {
         this.left = left;
         this.right = right;
         this.tipo = tipo;
-        //var x = this.execute();
-        //console.log(x)
     }
     execute(entorno, simbolos) {
         const leftValue = this.left.execute(entorno, simbolos);

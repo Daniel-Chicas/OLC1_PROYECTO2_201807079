@@ -21,6 +21,10 @@ app.use(express.json())
 
 const PORT = 5000
 
+app.get('/', (req, res)=>{
+    res.send("FUNCIONA");
+})
+
 app.post("/ejecutar", async (req, res)=>{
     const {entrada} = req.body
     var respuesta = Interprete(entrada)
@@ -60,7 +64,12 @@ function Interprete(datos){
     pruebaErrores.clearLista();
 
     if(listaErrores.length != 0){
-        return listaErrores
+        var errores = []
+        for (let i = 0; i < listaErrores.length; i++) {
+            const element = listaErrores[i];
+            errores.push("<--> Error "+element.tipo+": "+element.mensaje+", en la línea: "+element.linea+", columna: "+element.columna)
+        }
+        return errores
     }else{
         const env = new entorno(null, "Global")
         const tablaSimbolos = new simbolos("", null)
@@ -80,7 +89,9 @@ function Interprete(datos){
                 }
             }
         } catch (error) {
-            console.log(error)
+            var errores = []
+            errores.push("<--> Error "+error.tipo+": "+error.mensaje+", en la línea: "+error.linea+", columna: "+error.columna)
+            return errores
         }
 
 
@@ -94,7 +105,7 @@ function Interprete(datos){
                         var retorno = actual2.execute(env, tablaSimbolos);
                         if(retorno != null || retorno != undefined){
                             const error = require('./dist/Error/Error').Error_;
-                            throw new error(retorno.line, retorno.column, "Semántico", "No se puede colocar return/break/continue fuera de un ciclo o función o método.")
+                            throw new error(retorno.line, retorno.column, "Semántico", "No se puede colocar return/break/continue fuera de un ciclo, función o método.")
                         }
                     }
                 }else{
@@ -104,17 +115,21 @@ function Interprete(datos){
                     var retorno =  actual.execute(env, tablaSimbolos);
                     if(retorno != null || retorno != undefined){
                         const error = require('./dist/Error/Error').Error_;
-                        throw new error(retorno.line, retorno.column, "Semántico", "No se puede colocar return/break/continue fuera de un ciclo o función o método.")
+                        throw new error(retorno.line, retorno.column, "Semántico", "No se puede colocar return/break/continue fuera de un ciclo, función o método.")
                     }
                 }
             }
             var imp = new Impresiones().getLista()
             return imp
         } catch (error) {
-            console.log(error)
+            var errores = []
+            errores.push("<--> Error "+error.tipo+": "+error.mensaje+", en la línea: "+error.linea+", columna: "+error.columna)
+            return errores
         }
     }
 }
+
+var abierto = false;
 
 function DibujarArbol(datos){
     var raiz = new Recorrido_Arbol();
@@ -152,7 +167,7 @@ function DibujarArbol(datos){
                 console.log("se ha escrito correctamente")
             })
         }
-        exec('dot -T png ast.dot -o ast.png', (error, stdout, stderr)=>{
+        exec('dot -T pdf ast.dot -o ast.pdf', (error, stdout, stderr)=>{
             if(error){
                 console.log("error: "+error.message)
                 return
@@ -162,8 +177,22 @@ function DibujarArbol(datos){
                 return
             }
         })
-        let file = "data:image/png;base64,"+fs.readFileSync('ast.png', {encoding: "base64"})
-        return file
+        if(!abierto){
+            exec('ast.pdf', (error, stdout, stderr)=>{
+                if(error){
+                    console.log("error: "+error.message)
+                    return
+                }
+                if(stderr){
+                    console.log("stderr: "+stderr)
+                    return
+                }
+            })
+            abierto = true;
+        }else{
+            abierto = false;
+        }
+        
     }
 }
 

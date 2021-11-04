@@ -14,11 +14,11 @@ function Consola(props) {
 
     var datosPes = localStorage.getItem('consola')
     var datos = JSON.parse(datosPes);
-    const [value, setValue] = React.useState(datos[0]);
+    const [value] = React.useState(datos[0]);
 
-    function handleChange(editor, data, value){
-        setValue(value)
-    }
+    //function handleChange(editor, data, value){
+    //    setValue(value)
+    //}
 
     const cambia = ()=>{
         var datosPes = localStorage.getItem('consola')
@@ -29,7 +29,7 @@ function Consola(props) {
     return (
         <div className="editor-container">
             <ControlledEditor
-                onBeforeChange = {handleChange}
+                //onBeforeChange = {handleChange}
                 value = {value}
                 className = "code-mirror-wrapper"
                 onChange = {cambia(props.id)}
