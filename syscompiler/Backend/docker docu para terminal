@@ -19,3 +19,5 @@ docker run -d -p *puerto*:*puerto* *nombre de la imagen*				construir el contene
 docker start *id del contenedor*										para levantar el contenedor
 
 docker logs *id del contenedor*											para ver lo que imprime el servidor
+
+docker stop *id del contenedor*											para bajar un contenedor

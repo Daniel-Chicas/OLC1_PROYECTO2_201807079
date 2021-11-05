@@ -132,6 +132,7 @@ function Interprete(datos){
 var abierto = false;
 
 function DibujarArbol(datos){
+    console.log("creando árbol")
     var raiz = new Recorrido_Arbol();
     var arbolast = parserAst.parse(datos)
 

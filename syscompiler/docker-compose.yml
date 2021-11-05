@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+    frontend:
+      container_name: syscompilerf_201807079
+      restart: always
+      build: ./Frontend
+      ports:
+        - "3000:3000"
+    backend:
+      container_name: syscompiler_201807079
+      restart: always
+      build: ./Backend
+      ports:
+        - "5000:5000"
